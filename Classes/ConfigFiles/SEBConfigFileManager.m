@@ -337,6 +337,13 @@
         return;
     }
 
+    // Reject settings containing disallowed characters or invalid hash values
+    if (![self checkForDisallowedSettings:sebPreferencesDict error:&error]) {
+        // Inform callback that storing new settings failed
+        [self storeNewSEBSettingsSuccessful:error];
+        return;
+    }
+
     // Reading preferences was successful!
     [self storeDecryptedSEBSettings:sebPreferencesDict];
 }
@@ -738,7 +745,15 @@ static NSString *getUppercaseAdminPasswordHash(void)
         [self storeNewSEBSettingsSuccessful:error];
         return;
     }
-    
+
+    // Reject settings containing disallowed characters or invalid hash values
+    if (![self checkForDisallowedSettings:sebPreferencesDict error:&error]) {
+        DDLogError(@"%s: Checking settings failed!", __FUNCTION__);
+        // Inform callback that storing new settings failed
+        [self storeNewSEBSettingsSuccessful:error];
+        return;
+    }
+
     // Reading preferences was successful!
     DDLogInfo(@"%s: Checking received settings was successful", __FUNCTION__);
     [self storeDecryptedSEBSettings:sebPreferencesDict];
@@ -897,6 +912,104 @@ static NSString *getUppercaseAdminPasswordHash(void)
         }
     }
     return YES;
+}
+
+
+// Sanity checks on freshly parsed settings, run before the settings are stored
+// and before the Config Key is calculated. The Config Key is a hash over a JSON
+// serialization of these settings; SEB has no functional need for the double
+// quote character in any setting, and disallowing it in string values and keys
+// keeps that serialization well-formed and consistent across platforms. As
+// additional validation, hashed password fields must be either empty or a hash
+// value.
+- (BOOL)checkForDisallowedSettings:(NSDictionary *)sebPreferencesDict error:(NSError **)error
+{
+    NSString *offendingKeyPath = [self keyPathOfStringContainingDoubleQuoteInObject:sebPreferencesDict atKeyPath:nil];
+    if (offendingKeyPath) {
+        DDLogError(@"%s Setting '%@' contains the not allowed double quote (\") character!", __FUNCTION__, offendingKeyPath);
+        *error = [NSError errorWithDomain:sebErrorDomain
+                                     code:SEBErrorParsingSettingsFailedForbiddenCharacter
+                                 userInfo:@{NSLocalizedDescriptionKey : NSLocalizedString(@"Reading Settings Failed", @""),
+                                            NSLocalizedFailureReasonErrorKey : [NSString stringWithFormat:NSLocalizedString(@"A setting contains the character (%@), which is not allowed. Please remove it from the setting '%@' and try again.", @""), @"\"", offendingKeyPath]}];
+        return NO;
+    }
+
+    for (NSString *hashKey in @[@"hashedAdminPassword", @"hashedQuitPassword", @"sebServerFallbackPasswordHash"]) {
+        id hashValue = [sebPreferencesDict objectForKey:hashKey];
+        if (hashValue && ![self isValidHashOrEmptyValue:hashValue]) {
+            DDLogError(@"%s Setting '%@' doesn't contain a valid hash value!", __FUNCTION__, hashKey);
+            *error = [NSError errorWithDomain:sebErrorDomain
+                                         code:SEBErrorParsingSettingsFailedInvalidHashValue
+                                     userInfo:@{NSLocalizedDescriptionKey : NSLocalizedString(@"Reading Settings Failed", @""),
+                                                NSLocalizedFailureReasonErrorKey : [NSString stringWithFormat:NSLocalizedString(@"These settings are corrupted and cannot be used (failing key: %@).", @""), hashKey]}];
+            return NO;
+        }
+    }
+    return YES;
+}
+
+
+// Recursively search the settings tree (dictionaries, arrays and their string
+// keys and values) for a string containing a double quote character. Returns the
+// key path of the first offending string, or nil if none is found.
+- (NSString *)keyPathOfStringContainingDoubleQuoteInObject:(id)object atKeyPath:(NSString *)keyPath
+{
+    if ([object isKindOfClass:[NSString class]]) {
+        if ([(NSString *)object rangeOfString:@"\""].location != NSNotFound) {
+            return keyPath.length > 0 ? keyPath : (NSString *)object;
+        }
+        return nil;
+    }
+    if ([object isKindOfClass:[NSDictionary class]]) {
+        for (id key in (NSDictionary *)object) {
+            NSString *keyString = [key isKindOfClass:[NSString class]] ? (NSString *)key : [key description];
+            // The key itself is serialized into the Config Key JSON, so check it too
+            if ([key isKindOfClass:[NSString class]] &&
+                [(NSString *)key rangeOfString:@"\""].location != NSNotFound) {
+                return keyPath.length > 0 ? [keyPath stringByAppendingFormat:@".%@", keyString] : keyString;
+            }
+            NSString *childKeyPath = keyPath.length > 0 ? [keyPath stringByAppendingFormat:@".%@", keyString] : keyString;
+            NSString *found = [self keyPathOfStringContainingDoubleQuoteInObject:[(NSDictionary *)object objectForKey:key] atKeyPath:childKeyPath];
+            if (found) {
+                return found;
+            }
+        }
+        return nil;
+    }
+    if ([object isKindOfClass:[NSArray class]]) {
+        NSUInteger index = 0;
+        for (id element in (NSArray *)object) {
+            NSString *childKeyPath = [NSString stringWithFormat:@"%@[%lu]", keyPath.length > 0 ? keyPath : @"", (unsigned long)index];
+            NSString *found = [self keyPathOfStringContainingDoubleQuoteInObject:element atKeyPath:childKeyPath];
+            if (found) {
+                return found;
+            }
+            index++;
+        }
+        return nil;
+    }
+    return nil;
+}
+
+
+// A valid stored password hash is either an empty string (no password set) or a
+// SHA-256 hash rendered as 64 hexadecimal characters (see -[SEBKeychainManager
+// generateSHAHashString:]). Comparison of hashes is case-insensitive, so accept
+// both cases here.
+- (BOOL)isValidHashOrEmptyValue:(id)value
+{
+    if (![value isKindOfClass:[NSString class]]) {
+        return NO;
+    }
+    NSString *hashValue = (NSString *)value;
+    if (hashValue.length == 0) {
+        return YES;
+    }
+    if (hashValue.length != 64) {
+        return NO;
+    }
+    NSCharacterSet *nonHexCharacters = [[NSCharacterSet characterSetWithCharactersInString:@"0123456789abcdefABCDEF"] invertedSet];
+    return [hashValue rangeOfCharacterFromSet:nonHexCharacters].location == NSNotFound;
 }
 
 
@@ -1172,7 +1285,17 @@ static NSString *getUppercaseAdminPasswordHash(void)
     if (configPurpose == sebConfigPurposeStartingExam) {
         [filteredPrefsDict removeObjectForKey:@"copyBrowserExamKeyToClipboardWhenQuitting"];
     }
-    
+
+    // Reject settings containing a disallowed character or an invalid hash value
+    // before writing a .seb config (mirrors the same check on the config load path).
+    // UI callers run this check beforehand and present a user-facing alert (see
+    // -[PreferencesController savePrefsAs:fileURLUpdate:]); returning nil here
+    // ensures no other caller can write a config with disallowed content.
+    NSError *disallowedSettingsError = nil;
+    if (![self checkForDisallowedSettings:filteredPrefsDict error:&disallowedSettingsError]) {
+        return nil;
+    }
+
     // Convert preferences dictionary to XML property list
     NSError *error = nil;
     NSData *dataRep = [NSPropertyListSerialization dataWithPropertyList:filteredPrefsDict

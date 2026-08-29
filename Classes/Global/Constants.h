@@ -73,6 +73,8 @@
 #define SEBErrorDecryptingNoAdminPasswordEntered 106
 #define SEBErrorDecryptingIdentityNotFound 110
 #define SEBErrorParsingSettingsFailedValueClassMissmatch 201
+#define SEBErrorParsingSettingsFailedForbiddenCharacter 202
+#define SEBErrorParsingSettingsFailedInvalidHashValue 203
 #define SEBErrorParsingSettingsSerializingFailed 205
 #define SEBErrorOpeningUniversalLinkFailed 300
 

@@ -19,5 +19,12 @@ import Foundation
     @objc public static func jsonString(forDouble value: Double) -> String {
         return SEBCryptor.shared().jsonString(for: NSNumber(value: value))
     }
+
+    /// Serializes a String exactly as it is included as a value in the Config
+    /// Key JSON (including the surrounding quotes and JSON escaping).
+    /// See -[SEBCryptor jsonStringForObject:] and -[SEBCryptor jsonEscapedString:].
+    @objc public static func jsonString(forString value: String) -> String {
+        return SEBCryptor.shared().jsonString(for: value as NSString)
+    }
 }
 #endif

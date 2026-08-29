@@ -215,6 +215,12 @@
 // Helper methods
 - (NSString *) getHashedAdminPassword;
 - (NSError *) errorCorruptedSettingsForUnderlyingError:(NSError *)error;
+
+// Security sanity check: rejects settings that contain a double quote (") in any
+// string value or key (which could inject JSON structure into the Config Key), or
+// an invalid value in a hashed password field. Returns NO and sets *error on
+// failure. Run on both the config load and save paths.
+- (BOOL) checkForDisallowedSettings:(NSDictionary *)sebPreferencesDict error:(NSError **)error;
 - (void) promptPasswordForHashedPassword:(NSString *)passwordHash
                              messageText:(NSString *)messageText
                                    title:(NSString *)title

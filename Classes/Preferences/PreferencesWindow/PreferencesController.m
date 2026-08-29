@@ -369,6 +369,22 @@
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     SEBEncapsulatedSettings *oldSettings = [[SEBEncapsulatedSettings alloc] initWithCurrentSettings];
 
+    // Reject applying settings that contain a disallowed character (a double quote in
+    // any string value or key, which SEB does not allow in settings) or an invalid
+    // hashed password value. Keep the Settings window open so the user can correct
+    // the offending setting before closing/applying.
+    NSError *disallowedSettingsError = nil;
+    if (![self.configFileController checkForDisallowedSettings:[preferences dictionaryRepresentationSEB]
+                                                        error:&disallowedSettingsError]) {
+        NSAlert *disallowedSettingsAlert = [[NSAlert alloc] init];
+        [disallowedSettingsAlert setMessageText:NSLocalizedString(@"Applying Settings Failed", @"")];
+        [disallowedSettingsAlert setInformativeText:disallowedSettingsError.userInfo[NSLocalizedFailureReasonErrorKey]];
+        [disallowedSettingsAlert addButtonWithTitle:NSLocalizedString(@"OK", @"")];
+        [disallowedSettingsAlert setAlertStyle:NSAlertStyleCritical];
+        [self.sebController runModalAlert:disallowedSettingsAlert conditionallyForWindow:MBPreferencesController.sharedController.window completionHandler:nil];
+        return NO;
+    }
+
     // If private settings are active, check if those current settings have unsaved changes
     if (NSUserDefaults.userDefaultsPrivate && [[SEBCryptor sharedSEBCryptor] updateEncryptedUserDefaults:YES updateSalt:NO]) {
         // There are unsaved changes
@@ -1154,6 +1170,25 @@
     [preferences setSecureBool:sharePlainTextConfig forKey:@"org_safeexambrowser_shareConfigUncompressed"];
     BOOL uncompressed = self.canSavePlainText && sharePlainTextConfig;
     BOOL removeDefaults = [preferences secureBoolForKey:@"org_safeexambrowser_removeDefaults"];
+
+    // Reject settings that contain a disallowed character (a double quote in any
+    // string value or key, which SEB does not allow in settings) or an invalid
+    // hashed password value, before encrypting/saving them.
+    NSError *disallowedSettingsError = nil;
+    if (![self.configFileController checkForDisallowedSettings:[preferences dictionaryRepresentationSEBRemoveDefaults:removeDefaults]
+                                                        error:&disallowedSettingsError]) {
+        NSAlert *disallowedSettingsAlert = [[NSAlert alloc] init];
+        // Use a save-specific title; the error's own title ("Reading Settings Failed")
+        // is meant for the config load path. The informative text is action-neutral.
+        [disallowedSettingsAlert setMessageText:NSLocalizedString(@"Saving Settings Failed", @"")];
+        [disallowedSettingsAlert setInformativeText:disallowedSettingsError.userInfo[NSLocalizedFailureReasonErrorKey]];
+        [disallowedSettingsAlert addButtonWithTitle:NSLocalizedString(@"OK", @"")];
+        [disallowedSettingsAlert setAlertStyle:NSAlertStyleCritical];
+        [self.sebController runModalAlert:disallowedSettingsAlert conditionallyForWindow:MBPreferencesController.sharedController.window completionHandler:nil];
+
+        [oldSettings restoreSettings];
+        return NO;
+    }
 
     // Read SEB settings from UserDefaults and encrypt them using the provided security credentials
     NSData *encryptedConfigData = [self.configFileVC encryptSEBSettingsWithSelectedCredentialsConfigFormat:shareConfigFormat

@@ -128,6 +128,9 @@
 "26 Tahoe" = "26 Tahoe";
 
 /* No comment provided by engineer. */
+"A setting contains the character (%@), which is not allowed. Please remove it from the setting '%@' and try again." = "Eine Einstellung enthält das Zeichen (%1$@), welches nicht erlaubt ist. Bitte entfernen Sie es aus der Einstellung '%2$@' und versuchen Sie es erneut.";
+
+/* No comment provided by engineer. */
 "About %@" = "Über %@";
 
 /* No comment provided by engineer. */

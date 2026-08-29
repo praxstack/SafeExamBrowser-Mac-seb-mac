@@ -713,6 +713,7 @@
 		69CB3A872C9A2432006B7E5E /* SEBSliderScreenProctoringIcon_active_warning@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 69CB3A692C9A2432006B7E5E /* SEBSliderScreenProctoringIcon_active_warning@3x.png */; };
 		69CBEB561834C55C00FB0460 /* SEBSystemManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 69CBEB541834C55C00FB0460 /* SEBSystemManager.h */; };
 		69CBEB571834C55D00FB0460 /* SEBSystemManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 69CBEB551834C55C00FB0460 /* SEBSystemManager.m */; };
+		69CCEF9430422BDE00A4FFDD /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 69CCEF9330422BDE00A4FFDD /* Localizable.xcstrings */; };
 		69CE1C171741309C0072207D /* SEBFilterTreeController.h in Headers */ = {isa = PBXBuildFile; fileRef = 69CE1C151741309C0072207D /* SEBFilterTreeController.h */; };
 		69CE1C181741309C0072207D /* SEBFilterTreeController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69CE1C161741309C0072207D /* SEBFilterTreeController.m */; };
 		69CE9C5D17326AB90011609B /* SEBConfigFileManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 69CE9C5B17326AB90011609B /* SEBConfigFileManager.h */; };
@@ -829,7 +830,6 @@
 		69E977D925F040F400634D74 /* SEBAbstractClassicWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 69E977D425F040F400634D74 /* SEBAbstractClassicWebView.m */; };
 		69E977F025F0423C00634D74 /* SEBAbstractModernWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69E977EF25F0423C00634D74 /* SEBAbstractModernWebView.swift */; };
 		69E977F125F0423C00634D74 /* SEBAbstractModernWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69E977EF25F0423C00634D74 /* SEBAbstractModernWebView.swift */; };
-		69EA170319FA77A0001E0C51 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 69EA170119FA77A0001E0C51 /* Localizable.strings */; };
 		69EC2A3D1BD63B4800790AF7 /* WebViewInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 69EC2A3C1BD63B4800790AF7 /* WebViewInternal.h */; };
 		69EC2A3F1BD6C4FF00790AF7 /* WebPluginDatabase.h in Headers */ = {isa = PBXBuildFile; fileRef = 69EC2A3E1BD6C4FF00790AF7 /* WebPluginDatabase.h */; };
 		69EDAC1E1BBB476F00A3E6C4 /* SEBOSXLockedViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 69EDAC1C1BBB476F00A3E6C4 /* SEBOSXLockedViewController.h */; };
@@ -1477,7 +1477,6 @@
 		69A07215268A38AD00A0464B /* NSString+MscASCIIExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+MscASCIIExtension.m"; sourceTree = "<group>"; };
 		69A2233A1C20C10B00766354 /* SEBiOSConfigFileController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SEBiOSConfigFileController.h; path = Classes/ConfigFiles/SEBiOSConfigFileController.h; sourceTree = "<group>"; };
 		69A223401C20E38600766354 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.2.sdk/usr/lib/libz.tbd; sourceTree = DEVELOPER_DIR; };
-		69A3022919FE7B8F00B9A0F3 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		69A332342FBB54AD00FF96FF /* WKWebView+SEBEvaluateJavaScript.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WKWebView+SEBEvaluateJavaScript.h"; sourceTree = "<group>"; };
 		69A332362FBB54B200FF96FF /* WKWebView+SEBEvaluateJavaScript.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "WKWebView+SEBEvaluateJavaScript.m"; sourceTree = "<group>"; };
 		69A3FCD21C1B5680009BEA13 /* SEBConfigFileCredentials.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SEBConfigFileCredentials.h; sourceTree = "<group>"; };
@@ -1609,6 +1608,7 @@
 		69CB8AFD136AFC6E00C08450 /* PreferencesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PreferencesController.h; path = Classes/Preferences/PreferencesWindow/PreferencesController.h; sourceTree = "<group>"; };
 		69CBEB541834C55C00FB0460 /* SEBSystemManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SEBSystemManager.h; sourceTree = "<group>"; };
 		69CBEB551834C55C00FB0460 /* SEBSystemManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEBSystemManager.m; sourceTree = "<group>"; };
+		69CCEF9330422BDE00A4FFDD /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		69CE1C151741309C0072207D /* SEBFilterTreeController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SEBFilterTreeController.h; sourceTree = "<group>"; };
 		69CE1C161741309C0072207D /* SEBFilterTreeController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SEBFilterTreeController.m; sourceTree = "<group>"; };
 		69CE9C5B17326AB90011609B /* SEBConfigFileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SEBConfigFileManager.h; sourceTree = "<group>"; };
@@ -1989,7 +1989,7 @@
 				69A9A22E1369AF9600840AE1 /* LICENCE */,
 				690D80DC1A52370E00A3218B /* SafeExamBrowser-Info.plist */,
 				69909EFB283CB02E00199EB6 /* SafeExamBrowser-InfoPlist.strings */,
-				69EA170119FA77A0001E0C51 /* Localizable.strings */,
+				69CCEF9330422BDE00A4FFDD /* Localizable.xcstrings */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -4157,13 +4157,13 @@
 				69428CF4172F2E2500C87C58 /* ZoomTextIn.png in Resources */,
 				69428CF6172F2E2500C87C58 /* ZoomTextIn@2x.png in Resources */,
 				6947D89B1BB073EA00899A8A /* ZoomPageOut@2x.png in Resources */,
-				69EA170319FA77A0001E0C51 /* Localizable.strings in Resources */,
 				69CB3A862C9A2432006B7E5E /* SEBSliderScreenProctoringIcon_active_warning@3x.png in Resources */,
 				69CB3A6A2C9A2432006B7E5E /* SEBSliderScreenProctoringIcon_inactive@2x.png in Resources */,
 				69CB3A452C9A229F006B7E5E /* SEBScreenProctoringIcon_active_warning@3x.png in Resources */,
 				69CB3A7A2C9A2432006B7E5E /* SEBSliderScreenProctoringIcon_inactive_error.png in Resources */,
 				69E87E44202926080055988F /* SEBReloadIconLandscape@2x.png in Resources */,
 				69428CF8172F2E2500C87C58 /* ZoomTextOut.png in Resources */,
+				69CCEF9430422BDE00A4FFDD /* Localizable.xcstrings in Resources */,
 				69428CFA172F2E2500C87C58 /* ZoomTextOut@2x.png in Resources */,
 				69CB3A472C9A229F006B7E5E /* SEBScreenProctoringIcon_active_error@2x.png in Resources */,
 				695A8EE41E6CCA0600601099 /* SEBToolbarReloadIcon@2x.png in Resources */,
@@ -5032,14 +5032,6 @@
 			name = SEBServerOSXViewController.xib;
 			sourceTree = "<group>";
 		};
-		69EA170119FA77A0001E0C51 /* Localizable.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				69A3022919FE7B8F00B9A0F3 /* de */,
-			);
-			name = Localizable.strings;
-			sourceTree = "<group>";
-		};
 		69F0DCC42C9DD57F000D7C8C /* ScreenProctoring.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -5906,7 +5898,7 @@
 					"$(PROJECT_DIR)/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 3.7.1b2;
+				MARKETING_VERSION = 3.7.1b4;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CODE_SIGN_FLAGS = "";
 				OTHER_LDFLAGS = (
@@ -5973,7 +5965,7 @@
 					"$(PROJECT_DIR)/Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 3.7.1b2;
+				MARKETING_VERSION = 3.7.1b4;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CODE_SIGN_FLAGS = "";
 				OTHER_LDFLAGS = (
@@ -6041,6 +6033,7 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "Safe Exam Browser";
 				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_INTERFACE_HEADER_NAME = "$(PROJECT_NAME)-Swift.h";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = ../build;
@@ -6092,6 +6085,7 @@
 				PRODUCT_NAME = "Safe Exam Browser";
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_INTERFACE_HEADER_NAME = "$(PROJECT_NAME)-Swift.h";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = ../build;

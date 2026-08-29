@@ -61,4 +61,50 @@ final class SEBConfigKeyDoubleTests: XCTestCase {
         XCTAssertEqual(jsonString(0.00001), "1E-05")
         XCTAssertEqual(jsonString(0.0001), "0.0001")   // exponent -4: still fixed-point
     }
+
+    // MARK: - String escaping for the Config Key JSON
+
+    private func jsonString(_ value: String) -> String {
+        SEBCryptorConfigKeyTestSupport.jsonString(forString: value)
+    }
+
+    // A string without special characters is wrapped in quotes unchanged, so
+    // existing configs keep matching.
+    func testPlainStringIsUnchanged() {
+        XCTAssertEqual(jsonString("3d2f1a9c8b7e6d5c"), "\"3d2f1a9c8b7e6d5c\"")
+        XCTAssertEqual(jsonString(""), "\"\"")
+    }
+
+    // Double quotes inside a string value must be escaped so they cannot change
+    // the structure of the serialized Config Key JSON; distinct string values
+    // must always serialize to distinct bytes.
+    func testDoubleQuotesInStringValueAreEscaped() {
+        let value = "\",\"hashedQuitPassword\":\"3d2f1a9c8b7e6d5c"
+        let serialized = jsonString(value)
+        XCTAssertEqual(serialized,
+            "\"\\\",\\\"hashedQuitPassword\\\":\\\"3d2f1a9c8b7e6d5c\"")
+        // After removing the escaped quotes, only the two string delimiters
+        // remain — i.e. the value serializes as a single, self-contained JSON
+        // string with no unescaped quote in its content.
+        let bareQuotes = serialized
+            .replacingOccurrences(of: "\\\"", with: "")
+            .filter { $0 == "\"" }
+            .count
+        XCTAssertEqual(bareQuotes, 2)
+    }
+
+    // In this patch only the double quote is escaped (it's the only character
+    // that can change the structure of a serialized string when the bytes are
+    // hashed, not parsed). Backslashes and control characters are left as-is so
+    // the Config Key stays byte-identical for existing configs that contain them
+    // (regex URL filters, Windows process paths). Full RFC 8785 escaping of the
+    // backslash and control characters is planned for the SEB 4.0 Config Key
+    // format change.
+    func testOnlyDoubleQuoteIsEscaped() {
+        XCTAssertEqual(jsonString("a\\b"), "\"a\\b\"")              // backslash unchanged
+        XCTAssertEqual(jsonString("line1\nline2"), "\"line1\nline2\"") // newline unchanged
+        XCTAssertEqual(jsonString("\u{01}"), "\"\u{01}\"")         // control char unchanged
+        // A backslash directly before a quote must not swallow the quote's escape.
+        XCTAssertEqual(jsonString("a\\\"b"), "\"a\\\\\"b\"")
+    }
 }
