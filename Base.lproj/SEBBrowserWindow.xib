@@ -17,7 +17,6 @@
                 <outlet property="textSearchDone" destination="zsY-7o-QJv" id="09E-IP-vc5"/>
                 <outlet property="textSearchField" destination="S08-6E-SPm" id="TTL-nM-hTf"/>
                 <outlet property="textSearchPreviousNext" destination="FOw-Up-15U" id="LTk-jz-eXP"/>
-                <outlet property="textSearchResultsField" destination="res-tf-0001" id="res-ol-0001"/>
                 <outlet property="toolbarGoToDockButton" destination="PVb-Dk-TxC" id="mgP-n3-aE2"/>
                 <outlet property="toolbarReloadButton" destination="190" id="QQV-oy-lLZ"/>
                 <outlet property="window" destination="3" id="10"/>
@@ -132,7 +131,7 @@
                         <searchField key="view" toolTip="Search text on web pages. Search in PDFs only works with modern WebView and macOS 11 or newer" focusRingType="none" verticalHuggingPriority="750" textCompletion="NO" id="S08-6E-SPm">
                             <rect key="frame" x="0.0" y="0.0" width="100" height="21"/>
                             <autoresizingMask key="autoresizingMask"/>
-                            <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" usesSingleLineMode="YES" bezelStyle="round" sendsSearchStringImmediately="YES" id="21s-IH-qIo">
+                            <searchFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" usesSingleLineMode="YES" bezelStyle="round" sendsSearchStringImmediately="YES" id="21s-IH-qIo" customClass="SEBSearchFieldCell">
                                 <font key="font" usesAppearanceFont="YES"/>
                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -148,19 +147,6 @@
                             </connections>
                         </searchField>
                     </searchToolbarItem>
-                    <toolbarItem implicitItemIdentifier="7E1C2A90-1111-2222-3333-444455556666" label="Search Results" paletteLabel="Search Results" sizingBehavior="auto" id="res-it-0001" userLabel="Search Results Count">
-                        <nil key="toolTip"/>
-                        <textField key="view" hidden="YES" verticalHuggingPriority="750" id="res-tf-0001">
-                            <rect key="frame" x="0.0" y="11" width="64" height="17"/>
-                            <autoresizingMask key="autoresizingMask"/>
-                            <textFieldCell key="cell" lineBreakMode="clipping" selectable="NO" editable="NO" bordered="NO" drawsBackground="NO" alignment="right" title="" id="res-tc-0001">
-                                <font key="font" metaFont="system"/>
-                                <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
-                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                            </textFieldCell>
-                            <accessibility description="Search results count"/>
-                        </textField>
-                    </toolbarItem>
                     <toolbarItem implicitItemIdentifier="A2044AC0-F3AF-43BF-83DC-67F7977A4694" label="Previous/Next" paletteLabel="" sizingBehavior="auto" id="NOj-02-Eih" userLabel="Previous/Next Match">
                         <nil key="toolTip"/>
                         <segmentedControl key="view" hidden="YES" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="FOw-Up-15U">
@@ -200,7 +186,6 @@
                     <toolbarItem reference="175"/>
                     <toolbarItem reference="176"/>
                     <searchToolbarItem reference="2GF-yS-Sed"/>
-                    <toolbarItem reference="res-it-0001"/>
                     <toolbarItem reference="NOj-02-Eih"/>
                     <toolbarItem reference="Tww-Uu-pBF"/>
                     <toolbarItem reference="ZLD-BY-T5K"/>

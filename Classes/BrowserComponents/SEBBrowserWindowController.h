@@ -61,7 +61,6 @@
 @property (weak) IBOutlet NSSegmentedControl *backForwardButtons;
 @property (weak) IBOutlet NSSearchField *textSearchField;
 @property (weak) IBOutlet NSSegmentedControl *textSearchPreviousNext;
-@property (weak) IBOutlet NSTextField *textSearchResultsField;
 - (void) searchTextNext;
 - (void) searchTextPrevious;
 @property (weak) IBOutlet NSButton *textSearchDone;

@@ -49,6 +49,61 @@ void DisposeWindow (
                     );
 
 
+// NSSearchFieldCell subclass that draws a Safari-style "N of M" results counter
+// inside the search field, left of the cancel button, as part of the cell's own
+// drawing.
+static const CGFloat SEBResultsCountLeftPadding = 6.0;
+static const CGFloat SEBResultsCountRightPadding = 4.0;
+
+@interface SEBSearchFieldCell : NSSearchFieldCell
+@property (nonatomic, copy) NSString *resultsCountString;
+@end
+
+@implementation SEBSearchFieldCell
+
+- (NSDictionary *)resultsCountAttributes
+{
+    return @{ NSFontAttributeName: [NSFont systemFontOfSize:[NSFont smallSystemFontSize]],
+              NSForegroundColorAttributeName: [NSColor secondaryLabelColor] };
+}
+
+- (CGFloat)resultsCountWidth
+{
+    if (self.resultsCountString.length == 0) {
+        return 0;
+    }
+    NSSize size = [self.resultsCountString sizeWithAttributes:[self resultsCountAttributes]];
+    return ceil(size.width) + SEBResultsCountLeftPadding + SEBResultsCountRightPadding;
+}
+
+// Reserve space on the trailing side so the typed text never runs under the counter.
+- (NSRect)searchTextRectForBounds:(NSRect)rect
+{
+    NSRect textRect = [super searchTextRectForBounds:rect];
+    textRect.size.width = MAX(0, textRect.size.width - [self resultsCountWidth]);
+    return textRect;
+}
+
+- (void)drawInteriorWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
+{
+    [super drawInteriorWithFrame:cellFrame inView:controlView];
+    if (self.resultsCountString.length == 0) {
+        return;
+    }
+    NSDictionary *attributes = [self resultsCountAttributes];
+    NSSize textSize = [self.resultsCountString sizeWithAttributes:attributes];
+    NSRect cancelRect = [self cancelButtonRectForBounds:cellFrame];
+    CGFloat rightEdge = (!NSIsEmptyRect(cancelRect) && cancelRect.size.width > 0) ?
+        (NSMinX(cancelRect) - SEBResultsCountRightPadding) :
+        (NSMaxX(cellFrame) - SEBResultsCountRightPadding);
+    CGFloat x = rightEdge - textSize.width;
+    CGFloat y = NSMidY(cellFrame) - textSize.height / 2.0;
+    [self.resultsCountString drawAtPoint:NSMakePoint(x, y) withAttributes:attributes];
+}
+
+@end
+
+
 @implementation SEBBrowserWindowController
 
 @synthesize frameForNonFullScreenMode;
@@ -483,12 +538,13 @@ void DisposeWindow (
     }
 }
 
-// Sets the "N of M" string shown in the results label next to the search
-// field (empty hides it).
+// Sets the "N of M" string drawn inside the search field (empty hides it).
 - (void) setSearchResultsCountString:(NSString *)countString
 {
-    self.textSearchResultsField.stringValue = countString ? countString : @"";
-    self.textSearchResultsField.hidden = (countString.length == 0);
+    if ([self.textSearchField.cell isKindOfClass:[SEBSearchFieldCell class]]) {
+        ((SEBSearchFieldCell *)self.textSearchField.cell).resultsCountString = countString;
+        [self.textSearchField setNeedsDisplay:YES];
+    }
 }
 
 - (void) searchTextResultCurrent:(NSInteger)currentResult total:(NSInteger)totalResults
