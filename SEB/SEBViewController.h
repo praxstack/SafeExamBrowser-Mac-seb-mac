@@ -350,6 +350,11 @@ void run_on_ui_thread(dispatch_block_t block);
 - (void) showReconfiguringAlertWithError:(NSError *)error;
 - (void) showAlertWithError:(NSError *)error;
 
+// Returns NO (and shows an "Applying Settings Failed" alert) if the current
+// edited settings contain a value that must not be applied, so the caller can
+// keep the Settings UI open for the user to correct it.
+- (BOOL) editedSettingsValidForApplying;
+
 - (void) showStartSingleAppMode;
 
 - (void) resetSEB;

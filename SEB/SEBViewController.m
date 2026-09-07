@@ -39,6 +39,12 @@
 
 static NSMutableSet *browserWindowControllers;
 
+@interface SEBViewController ()
+// Returns NO (and shows an alert with the given title) if the current settings
+// contain a disallowed character or an invalid hash value.
+- (BOOL) currentSettingsAllowedShowingAlertWithTitle:(NSString *)title;
+@end
+
 @implementation SEBViewController
 
 @synthesize appSettingsViewController;
@@ -1428,6 +1434,12 @@ static NSMutableSet *browserWindowControllers;
     ShareConfigFormat shareConfigFormat = [preferences secureIntegerForKey:@"org_safeexambrowser_shareConfigFormat"];
     BOOL uncompressed = self.sebInAppSettingsViewController.canSavePlainText && [preferences secureBoolForKey:@"org_safeexambrowser_shareConfigUncompressed"];
     
+    // Reject sharing settings that contain a disallowed character or an invalid
+    // hash value, before encrypting them.
+    if (![self currentSettingsAllowedShowingAlertWithTitle:NSLocalizedString(@"Saving Settings Failed", @"")]) {
+        return;
+    }
+
     // Get SecIdentityRef for selected identity
     SecIdentityRef identityRef;
     identityRef = [_sebInAppSettingsViewController getSelectedIdentity];
@@ -1929,6 +1941,14 @@ static NSMutableSet *browserWindowControllers;
 
 - (void)applySettings
 {
+    // Reject applying settings that contain a disallowed character (a double quote in any
+    // string value or key, which SEB does not allow in settings) or an invalid hashed
+    // password value. Keep the Settings screen open (don't dismiss) so the user can correct
+    // the offending setting; the alert is shown by -editedSettingsValidForApplying. Mirrors
+    // -conditionallyClosePreferencesWindowAskToApply: on macOS.
+    if (![self editedSettingsValidForApplying]) {
+        return;
+    }
     [self.appSettingsViewController dismissViewControllerAnimated:NO completion:^{
         DDLogDebug(@"%s: Settings closed.", __FUNCTION__);
         self.appSettingsViewController = nil;
@@ -3650,8 +3670,31 @@ void run_on_ui_thread(dispatch_block_t block)
                                                          style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         self.alertController = nil;
     }]];
-    
+
     [self.topMostController presentViewController:_alertController animated:NO completion:nil];
+}
+
+
+// Returns NO (and shows an alert with the given title) if the current settings
+// contain a disallowed character or an invalid hash value. The informative text
+// names the offending setting and is shared with the config load/save paths.
+- (BOOL) currentSettingsAllowedShowingAlertWithTitle:(NSString *)title
+{
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    NSError *disallowedSettingsError = nil;
+    if (![self.configFileController checkForDisallowedSettings:[preferences dictionaryRepresentationSEB]
+                                                         error:&disallowedSettingsError]) {
+        [self showAlertWithTitle:title
+                         andText:disallowedSettingsError.userInfo[NSLocalizedFailureReasonErrorKey]];
+        return NO;
+    }
+    return YES;
+}
+
+
+- (BOOL) editedSettingsValidForApplying
+{
+    return [self currentSettingsAllowedShowingAlertWithTitle:NSLocalizedString(@"Applying Settings Failed", @"")];
 }
 
 

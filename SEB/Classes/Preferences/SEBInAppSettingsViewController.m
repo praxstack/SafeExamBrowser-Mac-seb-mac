@@ -96,6 +96,12 @@
 
 - (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController *)sender
 {
+    // Reject applying settings that contain a disallowed character or an invalid
+    // hash value; keep the Settings UI open (don't dismiss) so the user can
+    // correct the offending setting (an alert was shown).
+    if (![self->_sebViewController editedSettingsValidForApplying]) {
+        return;
+    }
     [sender dismissViewControllerAnimated:YES completion:^{
         [self->_sebViewController settingsViewControllerDidEnd:sender];
     }];
