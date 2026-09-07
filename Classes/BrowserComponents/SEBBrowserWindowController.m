@@ -478,6 +478,26 @@ void DisposeWindow (
 {
     self.textSearchPreviousNext.hidden = !matchFound;
     self.textSearchDone.hidden = (!matchFound || self.searchText.length == 0) && !self.browserWindow.toolbarWasHidden;
+    if (!matchFound) {
+        [self setSearchResultsCountString:@""];
+    }
+}
+
+// Sets the "N of M" string shown in the results label next to the search
+// field (empty hides it).
+- (void) setSearchResultsCountString:(NSString *)countString
+{
+    self.textSearchResultsField.stringValue = countString ? countString : @"";
+    self.textSearchResultsField.hidden = (countString.length == 0);
+}
+
+- (void) searchTextResultCurrent:(NSInteger)currentResult total:(NSInteger)totalResults
+{
+    if (totalResults > 0 && currentResult > 0) {
+        [self setSearchResultsCountString:[NSString stringWithFormat:NSLocalizedString(@"%1$ld of %2$ld", @"Search results counter shown in the search field, e.g. '1 of 15'"), (long)currentResult, (long)totalResults]];
+    } else {
+        [self setSearchResultsCountString:@""];
+    }
 }
 
 - (IBAction) textSearchDone:(id)sender
@@ -489,6 +509,7 @@ void DisposeWindow (
     }
     self.textSearchPreviousNext.hidden = YES;
     self.textSearchDone.hidden = YES;
+    [self setSearchResultsCountString:@""];
     [self.browserWindow conditionallyDisplayToolbar];
     [self.browserWindow makeFirstResponder:self.browserWindow];
 }

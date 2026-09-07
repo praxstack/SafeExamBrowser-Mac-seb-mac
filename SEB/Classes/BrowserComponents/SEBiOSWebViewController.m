@@ -851,6 +851,11 @@ API_AVAILABLE(ios(18.4)){
     [self.navigationDelegate searchTextMatchFound:matchFound];
 }
 
+- (void) searchTextResultCurrent:(NSInteger)currentResult total:(NSInteger)totalResults
+{
+    [self.navigationDelegate searchTextResultCurrent:currentResult total:totalResults];
+}
+
 
 - (UIImage *)invertImage:(UIImage *)originalImage
 {

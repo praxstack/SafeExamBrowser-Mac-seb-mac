@@ -3152,6 +3152,26 @@ void run_on_ui_thread(dispatch_block_t block)
     [searchBarView addConstraint:searchBarTopConstraint];
     [textSearchBar.superview addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[textSearchBar]-(0)-|" options:0 metrics:nil views:views]];
     searchBarWidthConstraint = nil;
+
+    // Add the "N of M" results counter label inside the search field
+    // (recreated together with the search bar in resetSearchBar).
+    searchResultsLabel = nil;
+    if (@available(iOS 13.0, *)) {
+        UILabel *resultsLabel = [[UILabel alloc] init];
+        resultsLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        resultsLabel.font = [UIFont systemFontOfSize:13];
+        resultsLabel.textColor = [UIColor secondaryLabelColor];
+        resultsLabel.textAlignment = NSTextAlignmentRight;
+        resultsLabel.hidden = YES;
+        UITextField *searchField = textSearchBar.searchTextField;
+        [searchField addSubview:resultsLabel];
+        [NSLayoutConstraint activateConstraints:@[
+            [resultsLabel.trailingAnchor constraintEqualToAnchor:searchField.trailingAnchor constant:-28],
+            [resultsLabel.centerYAnchor constraintEqualToAnchor:searchField.centerYAnchor],
+        ]];
+        searchResultsLabel = resultsLabel;
+    }
+
     [self setSearchBarWidthIcon:!_searchMatchFound];
 }
 
@@ -3179,7 +3199,14 @@ void run_on_ui_thread(dispatch_block_t block)
         toolbarSearchTextButton.hidden = YES;
         toolbarSearchBarView.hidden = NO;
         if (@available(iOS 13.0, *)) {
-            textSearchBar.searchTextField.backgroundColor = nil;
+            if (@available(iOS 26.0, *)) {
+                // Since iOS 26 the minimal-style search field no longer draws a
+                // default (light grey) fill, so it blends into the navigation
+                // bar. Set an explicit adaptive fill to restore a visible field.
+                textSearchBar.searchTextField.backgroundColor = [UIColor tertiarySystemFillColor];
+            } else {
+                textSearchBar.searchTextField.backgroundColor = nil;
+            }
         }
         if (self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact && !toolbarSearchBarActiveRemovedOtherItems) {
             toolbarSearchBarActiveRemovedOtherItems = YES;
@@ -6656,6 +6683,20 @@ void run_on_ui_thread(dispatch_block_t block)
     self.searchMatchFound = matchFound;
     toolbarSearchButtonPreviousResult.hidden = !matchFound;
     toolbarSearchButtonNextResult.hidden = !matchFound;
+    if (!matchFound) {
+        searchResultsLabel.hidden = YES;
+    }
+}
+
+- (void) searchTextResultCurrent:(NSInteger)currentResult total:(NSInteger)totalResults
+{
+    if (totalResults > 0 && currentResult > 0) {
+        searchResultsLabel.text = [NSString stringWithFormat:NSLocalizedString(@"%1$ld of %2$ld", @"Search results counter shown in the search field, e.g. '1 of 15'"), (long)currentResult, (long)totalResults];
+        searchResultsLabel.hidden = NO;
+    } else {
+        searchResultsLabel.text = @"";
+        searchResultsLabel.hidden = YES;
+    }
 }
 
 

@@ -529,6 +529,13 @@
     [self.navigationDelegate searchTextMatchFound:matchFound];
 }
 
+- (void) searchTextResultCurrent:(NSInteger)currentResult total:(NSInteger)totalResults
+{
+    if ([self.navigationDelegate respondsToSelector:@selector(searchTextResultCurrent:total:)]) {
+        [self.navigationDelegate searchTextResultCurrent:currentResult total:totalResults];
+    }
+}
+
 
 @synthesize customSEBUserAgent;
 

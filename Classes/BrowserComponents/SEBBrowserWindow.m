@@ -1041,6 +1041,11 @@
     [self.browserWindowController searchTextMatchFound:matchFound];
 }
 
+- (void) searchTextResultCurrent:(NSInteger)currentResult total:(NSInteger)totalResults
+{
+    [self.browserWindowController searchTextResultCurrent:currentResult total:totalResults];
+}
+
 
 - (void)setDownloadingSEBConfig:(BOOL)downloadingSEBConfig {
     self.browserControllerDelegate.downloadingSEBConfig = downloadingSEBConfig;

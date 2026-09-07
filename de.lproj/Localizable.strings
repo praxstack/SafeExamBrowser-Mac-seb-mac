@@ -1,6 +1,9 @@
 /* No comment provided by engineer. */
 " (%d:%d Remaining)" = " (%1$d:%2$d verbleibend)";
 
+/* Search results counter shown in the search field, e.g. '1 of 15' */
+"%1$ld of %2$ld" = "%1$ld von %2$ld";
+
 /* No comment provided by engineer. */
 " (after quitting %@)" = "(nach Beenden von %@)";
 
