@@ -133,6 +133,24 @@ final class SEBAllowedSEBVersionsTests: XCTestCase {
         XCTAssertTrue(allowed("3.9.0", ["  Mac.3.9.min  "]))
     }
 
+    // MARK: - Running version with a beta suffix (e.g. "3.7.1b4")
+
+    func testRunningVersionBetaSuffix_rankedBelowRelease() {
+        // A trailing beta suffix must not confuse the parser, and a beta ranks just
+        // below its release: 3.7.0 < 3.7.1b4 < 3.7.1.
+        XCTAssertTrue(allowed("3.7.1b4", ["Mac.3.7"]))          // major.minor only: beta is deeper, allowed
+        XCTAssertFalse(allowed("3.7.1b4", ["Mac.3.6"]))         // wrong minor
+        XCTAssertFalse(allowed("3.7.1b4", ["Mac.3.7.1"]))       // beta is below the 3.7.1 release
+        XCTAssertFalse(allowed("3.7.1b4", ["Mac.3.7.1.min"]))   // below the 3.7.1 minimum
+        XCTAssertTrue(allowed("3.7.1b4", ["Mac.3.7.min"]))      // >= 3.7 (beta deeper than specified)
+        XCTAssertTrue(allowed("3.7.1b4", ["Mac.3.7.0.min"]))    // 3.7.1b4 > 3.7.0
+        XCTAssertFalse(allowed("3.7.1b4", ["Mac.3.7.2.min"]))   // < 3.7.2
+
+        // The final release satisfies the same requirements the beta failed.
+        XCTAssertTrue(allowed("3.7.1", ["Mac.3.7.1"]))
+        XCTAssertTrue(allowed("3.7.1", ["Mac.3.7.1.min"]))
+    }
+
     // MARK: - Requirement description
 
     func testRequirementDescription_nilForEmpty() {
