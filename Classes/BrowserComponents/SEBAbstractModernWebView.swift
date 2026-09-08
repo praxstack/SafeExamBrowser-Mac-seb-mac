@@ -570,6 +570,7 @@ import CocoaLumberjackSwift
             previousSearchText = searchText
             sebWebView.seb_evaluateJavaScript("SEB_RemoveAllHighlights()", completionHandler: nil)
             self.navigationDelegate?.searchTextMatchFound?(false)
+            self.navigationDelegate?.searchTextResultCurrent?(0, total: 0)
         } else {
             // Check if we're dealing with a PDF
 //            if let pdfView = searchForPDFView(view: sebWebView) {
@@ -581,7 +582,7 @@ import CocoaLumberjackSwift
                 } else {
                     self.sebWebView.seb_evaluateJavaScript("SEB_SearchNext()", completionHandler: nil)
                 }
-                self.navigationDelegate?.searchTextMatchFound?(true)
+                self.reportSearchStatus()
             } else {
                 previousSearchText = searchText
                 let searchString = "SEB_HighlightAllOccurencesOfString('\(searchText)')"
@@ -591,21 +592,40 @@ import CocoaLumberjackSwift
                     } else {
                         self.sebWebView.seb_evaluateJavaScript("SEB_SearchNext()", completionHandler: nil)
                     }
-                    self.sebWebView.seb_evaluateJavaScript("SEB_SearchResultCount") { result, error in
-                        if error == nil {
-                            if result != nil {
-                                let count = result as! Int
-                                if count > 0 {
-                                    self.navigationDelegate?.searchTextMatchFound?(true)
-                                    return
-                                }
-                            }
+                    self.sebWebView.seb_evaluateJavaScript("SEB_SearchStatus()") { result, error in
+                        var current = 0
+                        var total = 0
+                        if error == nil, let status = result as? [Any], status.count == 2 {
+                            current = (status[0] as? NSNumber)?.intValue ?? 0
+                            total = (status[1] as? NSNumber)?.intValue ?? 0
+                        }
+                        if total > 0 {
+                            self.navigationDelegate?.searchTextMatchFound?(true)
+                            self.navigationDelegate?.searchTextResultCurrent?(current, total: total)
+                            return
                         }
                         self.sebWebView.seb_evaluateJavaScript("SEB_RemoveAllHighlights()", completionHandler: nil)
                         self.navigationDelegate?.searchTextMatchFound?(false)
+                        self.navigationDelegate?.searchTextResultCurrent?(0, total: 0)
                     }
                 }
             }
+        }
+    }
+
+    // Reads the current search status ([currentResultNumber, totalResults])
+    // from the page and forwards it to the navigation delegate for the
+    // "N of M" display.
+    private func reportSearchStatus() {
+        self.sebWebView.seb_evaluateJavaScript("SEB_SearchStatus()") { result, error in
+            var current = 0
+            var total = 0
+            if error == nil, let status = result as? [Any], status.count == 2 {
+                current = (status[0] as? NSNumber)?.intValue ?? 0
+                total = (status[1] as? NSNumber)?.intValue ?? 0
+            }
+            self.navigationDelegate?.searchTextMatchFound?(total > 0)
+            self.navigationDelegate?.searchTextResultCurrent?(current, total: total)
         }
     }
     

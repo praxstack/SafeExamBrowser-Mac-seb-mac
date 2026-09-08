@@ -71,6 +71,7 @@
 
 @property (strong, nonatomic) NSString *searchText;
 - (void) searchTextMatchFound:(BOOL)matchFound;
+- (void) searchTextResultCurrent:(NSInteger)currentResult total:(NSInteger)totalResults;
 - (void) sebWebViewDidFinishLoad;
 
 - (void) activateInitialFirstResponder;

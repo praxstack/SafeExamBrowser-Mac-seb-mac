@@ -36,6 +36,7 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 
 #import "SEBViewController.h"
+#import "SEBAllowedSEBVersions.h"
 
 static NSMutableSet *browserWindowControllers;
 
@@ -270,6 +271,85 @@ static NSMutableSet *browserWindowControllers;
         return NO;
     } else {
         return YES;
+    }
+}
+
+
+// Check if the running SEB version is allowed by the current settings (sebAllowedVersions).
+// Returns YES if allowed (or no restriction is configured for the iOS platform). If not allowed,
+// presents the "SEB Version Not Allowed!" alert and returns NO; the caller must abort starting
+// the session (no exam etc.). Mirrors -checkAllowedSEBVersions in the macOS SEBController.
+- (BOOL)checkAllowedSEBVersions
+{
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    NSArray<NSString *> *allowedVersions = [preferences secureStringArrayForKey:@"org_safeexambrowser_SEB_sebAllowedVersions"];
+
+    if (allowedVersions.count == 0) {
+        return YES; // No SEB version restriction specified.
+    }
+
+    NSString *version = [MyGlobals versionString];
+    NSString *build = [MyGlobals buildNumber];
+
+    SEBAllowedSEBVersions *allowedSEBVersions = [SEBAllowedSEBVersions new];
+    BOOL allowed = [allowedSEBVersions allowedSEBVersion:version
+                                             buildNumber:build
+                                                platform:SEBAllowedVersionPlatformiOS
+                                         allianceEdition:NO
+                                      fromVersionStrings:allowedVersions];
+    if (allowed) {
+        DDLogInfo(@"%s: The running SEB version (%@ build %@) is allowed by current settings.", __FUNCTION__, version, build);
+        return YES;
+    }
+
+    NSString *requirement = [allowedSEBVersions requirementDescriptionForPlatform:SEBAllowedVersionPlatformiOS
+                                                                          appName:SEBShortAppName
+                                                               fromVersionStrings:allowedVersions];
+    NSString *runningInfo = [NSString stringWithFormat:NSLocalizedString(@"You are running %@ version %@ (build %@). Please update to a required version.", @""),
+                             SEBShortAppName, version, build];
+    NSString *informativeText = [NSString stringWithFormat:@"%@\n\n%@", requirement, runningInfo];
+    DDLogError(@"%s The running SEB version (%@ build %@) is not allowed. %@", __FUNCTION__, version, build, requirement);
+
+    [self presentAllowedSEBVersionsNotAllowedAlertWithInformativeText:informativeText];
+    return NO;
+}
+
+
+// Presents the "SEB Version Not Allowed!" alert and ends the exam session on either button.
+// A disallowed version can never continue into the exam, so both buttons quit the session.
+- (void)presentAllowedSEBVersionsNotAllowedAlertWithInformativeText:(NSString *)informativeText
+{
+    if (_alertController) {
+        [_alertController dismissViewControllerAnimated:NO completion:nil];
+    }
+    _alertController = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:NSLocalizedString(@"%@ Version Not Allowed!", @""), SEBShortAppName]
+                                                          message:informativeText
+                                                   preferredStyle:UIAlertControllerStyleAlert];
+    [_alertController addAction:[UIAlertAction actionWithTitle:[NSString stringWithFormat:NSLocalizedString(@"Update %@", @""), SEBShortAppName]
+                                                        style:UIAlertActionStyleDefault
+                                                      handler:^(UIAlertAction *action) {
+        self.alertController = nil;
+        // Open SEB's App Store page before ending the session.
+        [self openSEBAppStorePage];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"requestQuit" object:self];
+    }]];
+    [_alertController addAction:[UIAlertAction actionWithTitle:[NSString stringWithFormat:NSLocalizedString(@"Quit %@", @""), SEBShortAppName]
+                                                        style:UIAlertActionStyleCancel
+                                                      handler:^(UIAlertAction *action) {
+        self.alertController = nil;
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"requestQuit" object:self];
+    }]];
+    [self.topMostController presentViewController:_alertController animated:NO completion:nil];
+}
+
+
+// Opens SEB's App Store page so the user can update to a required version.
+- (void)openSEBAppStorePage
+{
+    NSURL *url = [NSURL URLWithString:SEBiOSAppStorePage];
+    DDLogInfo(@"%s Opening SEB App Store page %@", __FUNCTION__, SEBiOSAppStorePage);
+    if (url && [[UIApplication sharedApplication] canOpenURL:url]) {
+        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
     }
 }
 
@@ -3092,6 +3172,26 @@ void run_on_ui_thread(dispatch_block_t block)
     [searchBarView addConstraint:searchBarTopConstraint];
     [textSearchBar.superview addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[textSearchBar]-(0)-|" options:0 metrics:nil views:views]];
     searchBarWidthConstraint = nil;
+
+    // Add the "N of M" results counter label inside the search field
+    // (recreated together with the search bar in resetSearchBar).
+    searchResultsLabel = nil;
+    if (@available(iOS 13.0, *)) {
+        UILabel *resultsLabel = [[UILabel alloc] init];
+        resultsLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        resultsLabel.font = [UIFont systemFontOfSize:13];
+        resultsLabel.textColor = [UIColor secondaryLabelColor];
+        resultsLabel.textAlignment = NSTextAlignmentRight;
+        resultsLabel.hidden = YES;
+        UITextField *searchField = textSearchBar.searchTextField;
+        [searchField addSubview:resultsLabel];
+        [NSLayoutConstraint activateConstraints:@[
+            [resultsLabel.trailingAnchor constraintEqualToAnchor:searchField.trailingAnchor constant:-28],
+            [resultsLabel.centerYAnchor constraintEqualToAnchor:searchField.centerYAnchor],
+        ]];
+        searchResultsLabel = resultsLabel;
+    }
+
     [self setSearchBarWidthIcon:!_searchMatchFound];
 }
 
@@ -3119,7 +3219,14 @@ void run_on_ui_thread(dispatch_block_t block)
         toolbarSearchTextButton.hidden = YES;
         toolbarSearchBarView.hidden = NO;
         if (@available(iOS 13.0, *)) {
-            textSearchBar.searchTextField.backgroundColor = nil;
+            if (@available(iOS 26.0, *)) {
+                // Since iOS 26 the minimal-style search field no longer draws a
+                // default (light grey) fill, so it blends into the navigation
+                // bar. Set an explicit adaptive fill to restore a visible field.
+                textSearchBar.searchTextField.backgroundColor = [UIColor tertiarySystemFillColor];
+            } else {
+                textSearchBar.searchTextField.backgroundColor = nil;
+            }
         }
         if (self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact && !toolbarSearchBarActiveRemovedOtherItems) {
             toolbarSearchBarActiveRemovedOtherItems = YES;
@@ -3758,7 +3865,7 @@ void run_on_ui_thread(dispatch_block_t block)
     if (@available(iOS 11.0, *)) {
         if (_secureMode &&
             UIScreen.mainScreen.isCaptured &&
-            ![preferences secureBoolForKey:@"org_safeexambrowser_SEB_enablePrintScreen"] ) {
+            ![preferences secureBoolForKey:@"org_safeexambrowser_SEB_allowScreenCaptureiOS"] ) {
             NSString *alertMessageiOSVersion = NSLocalizedString(@"The screen is being captured/shared. The exam cannot be started.", @"");
             if (_alertController) {
                 [_alertController dismissViewControllerAnimated:NO completion:nil];
@@ -4961,6 +5068,14 @@ void run_on_ui_thread(dispatch_block_t block)
             return;
         }
         
+        // Check if the running SEB version is allowed by the current settings. If not,
+        // abort starting the session here: the alert is presented and SEB ends the exam,
+        // so the session must not continue to start.
+        if (![self checkAllowedSEBVersions]) {
+            DDLogError(@"%s Running a SEB version which isn't allowed by current settings, don't start kiosk mode", __FUNCTION__);
+            return;
+        }
+
         // Update kiosk flags according to current settings
         [self updateKioskSettingFlags];
         
@@ -5413,7 +5528,7 @@ void run_on_ui_thread(dispatch_block_t block)
             _secureMode &&
             _sessionRunning &&
             !_clientConfigSecureModePaused &&
-            ![[NSUserDefaults standardUserDefaults] secureBoolForKey:@"org_safeexambrowser_SEB_enablePrintScreen"]) {
+            ![[NSUserDefaults standardUserDefaults] secureBoolForKey:@"org_safeexambrowser_SEB_allowScreenCaptureiOS"]) {
             DDLogError(@"Screen is being captured while in secure mode!");
             [self openLockdownWindows];
             [self.sebLockedViewController setLockdownAlertTitle: NSLocalizedString(@"Screen is Being Captured/Shared!", @"Lockdown alert title text for screen is being captured/shared")
@@ -5424,7 +5539,7 @@ void run_on_ui_thread(dispatch_block_t block)
             NSString *logString = [NSString stringWithFormat:@"Screen capturing/sharing %@, while %@running in secure mode%@.",
                                    UIScreen.mainScreen.isCaptured ? @"started" : @"stopped",
                                    _secureMode ? @"" : @"not ",
-                                   [[NSUserDefaults standardUserDefaults] secureBoolForKey:@"org_safeexambrowser_SEB_enablePrintScreen"] ? @" and it is allowed in current settings" : @""];
+                                   [[NSUserDefaults standardUserDefaults] secureBoolForKey:@"org_safeexambrowser_SEB_allowScreenCaptureiOS"] ? @" and it is allowed in current settings" : @""];
             DDLogInfo(@"%@", logString);
         }
     }
@@ -5811,13 +5926,50 @@ void run_on_ui_thread(dispatch_block_t block)
     }
 }
 
+// ScreenProctoringDelegate: the connection to the screen proctoring server failed.
+// For a fatal failure we don't let the session silently continue unmonitored:
+// alert the user and offer to retry connecting or quit the session.
+- (void) screenProctoringDidFailWithError:(NSError *)error fatal:(BOOL)fatal
+{
+    DDLogError(@"Screen proctoring connection did fail with error: %@ (fatal: %d)", error.userInfo[NSDebugDescriptionErrorKey] ?: error.localizedDescription, fatal);
+    if (!fatal) {
+        return;
+    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSString *localizedRecoverySuggestion = error.userInfo[NSLocalizedRecoverySuggestionErrorKey];
+        if (localizedRecoverySuggestion.length == 0) {
+            localizedRecoverySuggestion = NSLocalizedString(@"Contact your exam administrator", @"");
+        }
+        NSString *description = error.userInfo[NSLocalizedDescriptionKey];
+        if (description.length == 0) {
+            description = error.localizedDescription;
+        }
+        NSString *message = [NSString stringWithFormat:@"%@\n%@", description, localizedRecoverySuggestion];
+        [self alertWithTitle:NSLocalizedString(@"Screen Proctoring Connection Failed", @"")
+                     message:message
+              preferredStyle:UIAlertControllerStyleAlert
+                action1Title:NSLocalizedString(@"Retry", @"")
+                action1Style:UIAlertActionStyleDefault
+              action1Handler:^{
+            DDLogInfo(@"Screen proctoring connection failed: user selected Retry");
+            [self.screenProctoringController retryConnectingToScreenProctoringServer];
+        }
+                action2Title:NSLocalizedString(@"Quit Session", @"")
+                action2Style:UIAlertActionStyleCancel
+              action2Handler:^{
+            DDLogInfo(@"Screen proctoring connection failed: user selected Quit");
+            [self sessionQuitRestart:NO];
+        }];
+    });
+}
+
 - (void) proctoringInstructionWithAttributes:(NSDictionary *)attributes
 {
     DDLogDebug(@"%s", __FUNCTION__);
-    
+
     NSString *serviceType = attributes[@"service-type"];
     DDLogDebug(@"%s: Service type: %@", __FUNCTION__, serviceType);
-    
+
     if ([serviceType isEqualToString:proctoringServiceTypeScreenProctoring]) {
         NSString *instructionConfirm = attributes[@"instruction-confirm"];
         if (![instructionConfirm isEqualToString:self.serverController.sebServerController.pingInstruction]) {
@@ -6611,6 +6763,20 @@ void run_on_ui_thread(dispatch_block_t block)
     self.searchMatchFound = matchFound;
     toolbarSearchButtonPreviousResult.hidden = !matchFound;
     toolbarSearchButtonNextResult.hidden = !matchFound;
+    if (!matchFound) {
+        searchResultsLabel.hidden = YES;
+    }
+}
+
+- (void) searchTextResultCurrent:(NSInteger)currentResult total:(NSInteger)totalResults
+{
+    if (totalResults > 0 && currentResult > 0) {
+        searchResultsLabel.text = [NSString stringWithFormat:NSLocalizedString(@"%1$ld of %2$ld", @"Search results counter shown in the search field, e.g. '1 of 15'"), (long)currentResult, (long)totalResults];
+        searchResultsLabel.hidden = NO;
+    } else {
+        searchResultsLabel.text = @"";
+        searchResultsLabel.hidden = YES;
+    }
 }
 
 

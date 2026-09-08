@@ -1,6 +1,9 @@
 /* No comment provided by engineer. */
 " (%d:%d Remaining)" = " (%1$d:%2$d verbleibend)";
 
+/* Search results counter shown in the search field, e.g. '1 of 15' */
+"%1$ld of %2$ld" = "%1$ld von %2$ld";
+
 /* No comment provided by engineer. */
 " (Connected to Power Source)" = "(mit Stromquelle verbunden)";
 
@@ -596,6 +599,12 @@ Shown while connecting to the server to fetch its certificate */
 /* Explanation at the top of the fetch-server-certificate sheet (Network / Certificates settings) */
 "Fetch a certificate presented by an HTTPS server and embed it into the settings. Verify the SHA-256 fingerprint out of band before embedding." = "Ein von einem HTTPS-Server präsentiertes Zertifikat abrufen und in die Einstellungen einbetten. Überprüfen Sie den SHA-256-Fingerabdruck über einen unabhängigen Kanal, bevor Sie es einbetten.";
 
+/* Placeholder in the server URL field of the fetch-server-certificate sheet */
+"Server URL or host (e.g. exam.example.org)" = "Server-URL oder Host (z. B. exam.example.org)";
+
+/* Button that fetches the certificate chain from the entered server */
+"Fetch" = "Abrufen";
+
 /* No comment provided by engineer. */
 "Fetching identities" = "Identitäten werden geladen …";
 
@@ -1065,6 +1074,9 @@ Shown while connecting to the server to fetch its certificate */
 "Screen Proctoring Active" = "Screen Proctoring Aktiv";
 
 /* No comment provided by engineer. */
+"Screen Proctoring Connection Failed" = "Screen Proctoring-Verbindung fehlgeschlagen";
+
+/* No comment provided by engineer. */
 "Screen Proctoring Inactive" = "Screen Proctoring Inaktiv";
 
 /* No comment provided by engineer. */
@@ -1471,4 +1483,16 @@ Shown while connecting to the server to fetch its certificate */
 
 /* No comment provided by engineer. */
 "Zoom Page Out" = "Seiteninhalt verkleinern";
+
+/* No comment provided by engineer. */
+"%@ Version Not Allowed!" = "%@-Version nicht erlaubt!";
+
+/* No comment provided by engineer. */
+"You are running %@ version %@ (build %@). Please update to a required version." = "Sie verwenden %@ Version %@ (Build %@). Bitte aktualisieren Sie auf eine erforderliche Version.";
+
+/* No comment provided by engineer. */
+"Update %@" = "%@ aktualisieren";
+
+/* No comment provided by engineer. */
+"Quit %@" = "%@ beenden";
 

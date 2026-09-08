@@ -150,6 +150,7 @@ NS_ASSUME_NONNULL_BEGIN
     UIButton *toolbarSearchTextButton;
     UIView *toolbarSearchBarView;
     UISearchBar *textSearchBar;
+    UILabel *searchResultsLabel;
     NSLayoutConstraint *searchBarWidthConstraint;
     NSLayoutConstraint *searchBarTopConstraint;
     UIButton *toolbarSearchButtonNextResult;
@@ -488,6 +489,7 @@ void run_on_ui_thread(dispatch_block_t block);
 - (UIViewController *) topMostController;
 
 - (void) searchTextMatchFound:(BOOL)matchFound;
+- (void) searchTextResultCurrent:(NSInteger)currentResult total:(NSInteger)totalResults;
 - (void) sebWebViewDidFinishLoad;
 
 @end

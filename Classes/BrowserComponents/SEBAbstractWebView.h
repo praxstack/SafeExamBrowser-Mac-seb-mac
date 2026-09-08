@@ -170,6 +170,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readwrite, nonatomic) double pageZoom;
 
 - (void) searchTextMatchFound:(BOOL)matchFound;
+- (void) searchTextResultCurrent:(NSInteger)currentResult total:(NSInteger)totalResults;
 
 
 @property (readonly, nonatomic) NSString *customSEBUserAgent;

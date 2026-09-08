@@ -45,6 +45,19 @@ static BOOL SEBIsNonNegativeInteger(NSString *string)
     return [string rangeOfCharacterFromSet:nonDigits].location == NSNotFound;
 }
 
+/// Returns the value of the leading run of decimal digits in the string (e.g. "1b4" -> 1),
+/// or 0 if it doesn't start with a digit. Used to tolerate a trailing suffix such as a beta
+/// marker in a running version string like "3.7.1b4".
+static NSInteger SEBLeadingInteger(NSString *string)
+{
+    NSScanner *scanner = [NSScanner scannerWithString:string];
+    NSInteger value = 0;
+    if ([scanner scanInteger:&value] && value >= 0) {
+        return value;
+    }
+    return 0;
+}
+
 
 #pragma mark - Parsed restriction
 
@@ -165,42 +178,40 @@ static BOOL SEBIsNonNegativeInteger(NSString *string)
         return YES; // No restriction specified: any version is allowed.
     }
 
-    NSArray<NSNumber *> *running = [self versionComponentsForVersion:version buildNumber:build];
+    NSInteger betaComponentIndex = NSNotFound;
+    NSArray<NSNumber *> *running = [self versionComponentsForVersion:version buildNumber:build betaComponentIndex:&betaComponentIndex];
 
-    NSUInteger validRestrictionCount = 0;
-    BOOL foundRelevantRestriction = NO;
+    // A restriction only constrains the platform it names. Consider only restrictions
+    // for the running platform; restrictions for other platforms (and empty/malformed
+    // entries) are ignored.
+    BOOL foundRestrictionForPlatform = NO;
     for (NSString *restrictionString in restrictions) {
         SEBVersionRestriction *restriction = [SEBVersionRestriction restrictionFromString:restrictionString];
         if (!restriction) {
             DDLogWarn(@"%s Ignoring empty or malformed sebAllowedVersions entry: %@", __FUNCTION__, restrictionString);
             continue;
         }
-        validRestrictionCount++;
         if (restriction.platform != platform) {
             continue; // Restriction is for another platform.
         }
-        foundRelevantRestriction = YES;
+        foundRestrictionForPlatform = YES;
         // Alliance Edition must match exactly (this build's AE flag vs. the restriction's).
         if (restriction.allianceEdition != allianceEdition) {
             continue;
         }
-        if ([self running:running satisfiesRestriction:restriction]) {
+        if ([self running:running betaComponentIndex:betaComponentIndex satisfiesRestriction:restriction]) {
             return YES;
         }
     }
 
-    if (validRestrictionCount == 0) {
-        // The list contained only empty/malformed entries: treat it as no restriction
-        // rather than blocking (e.g. an accidentally added blank row).
-        DDLogWarn(@"%s sebAllowedVersions contained only empty/malformed entries; treating as no restriction.", __FUNCTION__);
+    if (!foundRestrictionForPlatform) {
+        // No (valid) restriction is configured for the running platform, so every
+        // version of that platform is allowed — even if other platforms are restricted.
         return YES;
     }
 
-    if (!foundRelevantRestriction) {
-        DDLogWarn(@"%s sebAllowedVersions specifies no version for this platform; running build is not allowed.", __FUNCTION__);
-    }
-    // A restriction list with valid entries but no satisfiable one for this platform
-    // means the running build is not among the allowed versions.
+    // Restriction(s) exist for this platform but none is satisfied by the running build.
+    DDLogWarn(@"%s The running build is not among the versions allowed for this platform by sebAllowedVersions.", __FUNCTION__);
     return NO;
 }
 
@@ -262,48 +273,69 @@ static BOOL SEBIsNonNegativeInteger(NSString *string)
 #pragma mark - Private
 
 /// Maps the running version string and build number into [major, minor, patch, build].
-- (NSArray<NSNumber *> *)versionComponentsForVersion:(NSString *)version buildNumber:(nullable NSString *)build
+/// Each component is parsed by its leading integer, so a trailing beta suffix in the
+/// running version string (e.g. "3.7.1b4") is tolerated: it yields major 3, minor 7,
+/// patch 1. `outBetaComponentIndex` is set to the index of the first component that
+/// carried a non-numeric (pre-release) suffix — e.g. 2 for the "1b4" patch of
+/// "3.7.1b4" — or NSNotFound for a clean release version. This lets a beta be ranked
+/// just below the equally-numbered release when a restriction compares that deep.
+- (NSArray<NSNumber *> *)versionComponentsForVersion:(NSString *)version
+                                         buildNumber:(nullable NSString *)build
+                                  betaComponentIndex:(NSInteger *)outBetaComponentIndex
 {
-    NSInteger major = 0, minor = 0, patch = 0;
     NSArray<NSString *> *parts = [version componentsSeparatedByString:@"."];
-    if (parts.count > 0 && SEBIsNonNegativeInteger(parts[0])) {
-        major = parts[0].integerValue;
+    NSInteger values[3] = {0, 0, 0};
+    NSInteger betaComponentIndex = NSNotFound;
+    for (NSInteger i = 0; i < 3; i++) {
+        if (i >= (NSInteger)parts.count) {
+            break;
+        }
+        NSString *part = parts[i];
+        values[i] = SEBLeadingInteger(part);
+        if (betaComponentIndex == NSNotFound && part.length > 0 && !SEBIsNonNegativeInteger(part)) {
+            // This component carries a non-numeric suffix (e.g. "1b4"): the running
+            // version is a pre-release of this component's number.
+            betaComponentIndex = i;
+        }
     }
-    if (parts.count > 1 && SEBIsNonNegativeInteger(parts[1])) {
-        minor = parts[1].integerValue;
-    }
-    if (parts.count > 2 && SEBIsNonNegativeInteger(parts[2])) {
-        patch = parts[2].integerValue;
+    if (outBetaComponentIndex) {
+        *outBetaComponentIndex = betaComponentIndex;
     }
     // CFBundleVersion is treated as a single integer; -integerValue tolerates a nil
     // or non-numeric build (returns 0 / the leading integer).
     NSInteger buildNumber = build.integerValue;
-    return @[@(major), @(minor), @(patch), @(buildNumber)];
+    return @[@(values[0]), @(values[1]), @(values[2]), @(buildNumber)];
 }
 
 
 /// Compares the running version against a restriction, considering only the
-/// components the restriction explicitly specified.
-- (BOOL)running:(NSArray<NSNumber *> *)running satisfiesRestriction:(SEBVersionRestriction *)restriction
+/// components the restriction explicitly specified. A running pre-release (beta)
+/// whose suffix is within the specified precision ranks just below the equally-
+/// numbered release (e.g. "3.7.1b4" is below "3.7.1", so it fails "Mac.3.7.1" and
+/// "Mac.3.7.1.min", but still satisfies "Mac.3.7").
+- (BOOL)running:(NSArray<NSNumber *> *)running
+betaComponentIndex:(NSInteger)betaComponentIndex
+satisfiesRestriction:(SEBVersionRestriction *)restriction
 {
     NSArray<NSNumber *> *required = @[@(restriction.major), @(restriction.minor),
                                       @(restriction.patch), @(restriction.build)];
     for (NSUInteger i = 0; i < restriction.specifiedComponents; i++) {
         NSInteger runningValue = running[i].integerValue;
         NSInteger requiredValue = required[i].integerValue;
-        if (restriction.minimum) {
-            if (runningValue > requiredValue) {
-                return YES; // A newer component means the minimum is satisfied.
-            }
-            if (runningValue < requiredValue) {
-                return NO;  // An older component means it is not.
-            }
-            // Equal component: continue comparing the next one.
-        } else if (runningValue != requiredValue) {
-            return NO; // Exact match required.
+        if (runningValue > requiredValue) {
+            return restriction.minimum; // Newer: satisfies a minimum, fails an exact match.
         }
+        if (runningValue < requiredValue) {
+            return NO; // Older: fails both minimum and exact.
+        }
+        // Equal component: continue comparing the next one.
     }
-    // All specified components matched (exact) or were equal up to here (minimum).
+    // All specified numeric components are equal. If the running version is a
+    // pre-release at or above the specified precision, it ranks below the equally-
+    // numbered release, so it fails both an exact match and a minimum.
+    if (betaComponentIndex != NSNotFound && betaComponentIndex < (NSInteger)restriction.specifiedComponents) {
+        return NO;
+    }
     return YES;
 }
 

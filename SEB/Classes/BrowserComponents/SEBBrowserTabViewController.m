@@ -261,6 +261,11 @@
     [_sebViewController searchTextMatchFound:matchFound];
 }
 
+- (void) searchTextResultCurrent:(NSInteger)currentResult total:(NSInteger)totalResults
+{
+    [_sebViewController searchTextResultCurrent:currentResult total:totalResults];
+}
+
 
 @synthesize customSEBUserAgent;
 
