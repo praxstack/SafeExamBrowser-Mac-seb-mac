@@ -5455,6 +5455,49 @@
           }
         }
       }
+    },
+    "%1$ld of %2$ld" : {
+      "comment" : "Search results counter shown in the search field, e.g. '1 of 15'",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$ld von %2$ld"
+          }
+        }
+      }
+    },
+    "Server URL or host (e.g. exam.example.org)" : {
+      "comment" : "Placeholder in the server URL field of the fetch-server-certificate sheet",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server-URL oder Host (z. B. exam.example.org)"
+          }
+        }
+      }
+    },
+    "Fetch" : {
+      "comment" : "Button that fetches the certificate chain from the entered server",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrufen"
+          }
+        }
+      }
+    },
+    "Screen Proctoring Connection Failed" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Screen Proctoring-Verbindung fehlgeschlagen"
+          }
+        }
+      }
     }
   },
   "version" : "1.2"
