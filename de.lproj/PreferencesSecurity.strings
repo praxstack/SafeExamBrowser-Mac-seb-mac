@@ -61,8 +61,8 @@
 /* Class = "NSTextFieldCell"; title = "SEB Service policy"; ObjectID = "100"; */
 "100.title" = "SEB-Service Richtlinie (Win)";
 
-/* Class = "NSButton"; ibShadowedToolTip = "Private clipboard should always be used besides when working with third party applications in a managed user account (if 'Enforce private clipboard on Mac' is enabled, this setting only affects SEB for Windows and older Mac versions)"; ObjectID = "292"; */
-"292.ibShadowedToolTip" = "Üblicherweise sollte die private Zwischenablage verwendet werden, ausser wenn mit zugelassenen Drittapplikationen in einem verwalteten Benutzerkonto gearbeitet werden soll (wenn 'Private Zwischenablage auf Mac erzwingen' aktiv ist, beeinflusst diese Einstellung nur SEB für Windows und ältere Mac-Versionen)";
+/* Class = "NSButton"; ibShadowedToolTip = "Private clipboard should always be used besides when working with third party applications in a managed user account (if 'Enforce private clipboard (Mac)' is enabled, this setting only affects SEB for Windows and older Mac versions)"; ObjectID = "292"; */
+"292.ibShadowedToolTip" = "Üblicherweise sollte die private Zwischenablage verwendet werden, ausser wenn mit zugelassenen Drittapplikationen in einem verwalteten Benutzerkonto gearbeitet werden soll (wenn 'Private Zwischenablage erzwingen (Mac)' aktiv ist, beeinflusst diese Einstellung nur SEB für Windows und ältere Mac-Versionen)";
 
 /* Class = "NSButtonCell"; title = "Use private clipboard"; ObjectID = "293"; */
 "293.title" = "Private Zwischenablage verwenden";
@@ -118,8 +118,8 @@
 /* Class = "NSButton"; ibShadowedToolTip = "Controls capturing the iOS device screen using AirPlay or a Lightning/USB-C cable. Corresponds with enable PrintScreen on Win"; ObjectID = "c2c-ER-MY0"; */
 "c2c-ER-MY0.ibShadowedToolTip" = "Steuert die Aufzeichnung oder Wiedergabe des Bildschirminhalts eines iOS-Gerätes über AirPlay oder ein Lightning/USC-C Kabel. Entspricht 'PrintScreen erlauben' auf Win";
 
-/* Class = "NSButtonCell"; title = "Enforce private clipboard on Mac"; ObjectID = "cfE-bh-Syt"; */
-"cfE-bh-Syt.title" = "Private Zwischenablage auf Mac erzwingen";
+/* Class = "NSButtonCell"; title = "Enforce private clipboard (Mac)"; ObjectID = "cfE-bh-Syt"; */
+"cfE-bh-Syt.title" = "Private Zwischenablage erzwingen (Mac)";
 
 /* Class = "NSMatrix"; ibShadowedToolTip = "Automatic Assessment Configuration (AAC) Assessment Mode is available from macOS Monterey 12.1 (and Catalina 10.15.4 / 10.15.6+), from macOS Big Sur 11 with restrictions. It blocks various macOS features (which cannot be allowed optionally, like screen/window capture/sharing/mirroring, Siri, Dictation, Screen Proctoring)"; ObjectID = "ci1-uS-Bra"; */
 "ci1-uS-Bra.ibShadowedToolTip" = "Automatic Assessment Configuration (AAC) Bewertungsmodus ist ab macOS Monterey 12.1 (und Catalina 10.15.4 / 10.15.6+) verfügbar, ab macOS Big Sur 11 mit Einschränkungen. Er blockiert verschiedene macOS-Funktionen (die nicht optional erlaubt werden können, wie Bildschirm-/Fensteraufnahme/-freigabe/-spiegelung, Siri, Diktat, Screen Proctoring)";
@@ -187,8 +187,8 @@
 /* Class = "NSButton"; ibShadowedToolTip = "SEB enforces to be installed in the Applications folder (/Applications)"; ObjectID = "Gly-dr-m3X"; */
 "Gly-dr-m3X.ibShadowedToolTip" = "SEB verlangt, im Programmverzeichnis installiert zu werden (/Programme)";
 
-/* Class = "NSButtonCell"; title = "Use built-in display"; ObjectID = "gma-Qm-KEF"; */
-"gma-Qm-KEF.title" = "Eingebautes Display benutzen";
+/* Class = "NSButtonCell"; title = "Use built-in display (Mac)"; ObjectID = "gma-Qm-KEF"; */
+"gma-Qm-KEF.title" = "Eingebautes Display benutzen (Mac)";
 
 /* Class = "NSButtonCell"; title = "Enable Print Screen"; ObjectID = "GQb-uN-fJO"; */
 "GQb-uN-fJO.title" = "Print Screen erlauben";
@@ -379,8 +379,8 @@
 /* Class = "NSButtonCell"; title = "Allow"; ObjectID = "QHl-gL-uGm"; */
 "QHl-gL-uGm.title" = "Erlauben";
 
-/* Class = "NSButton"; ibShadowedToolTip = "If enabled, overrides the old setting 'Use private clipboard\" and enforces the private clipboard, so contents can only be copy-pasted inside SEB browser windows"; ObjectID = "qqs-ZA-6ds"; */
-"qqs-ZA-6ds.ibShadowedToolTip" = "Wenn aktiviert, wird die alte Einstellung 'Private Zwischenablage verwenden' nicht beachtet, sodass Inhalte nur innerhalb von SEB-Browserfenstern kopiert und eingefügt werden können";
+/* Class = "NSButton"; ibShadowedToolTip = "Enforces the private clipboard in the classic kiosk mode, so contents can only be copy-pasted inside SEB browser windows"; ObjectID = "qqs-ZA-6ds"; */
+"qqs-ZA-6ds.ibShadowedToolTip" = "Private Zwischenablage wird im klassischen Kioskmodus erzwungen, sodass Inhalte nur innerhalb von SEB-Browserfenstern kopiert und eingefügt werden können";
 
 /* Class = "NSTabViewItem"; label = "iOS"; ObjectID = "qR0-7R-jPL"; */
 "qR0-7R-jPL.label" = "iOS";

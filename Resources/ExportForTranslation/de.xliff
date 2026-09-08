@@ -4072,9 +4072,9 @@ Es wird gelöscht, wenn die Sitzung beendet wird</target>
         <note>Class = "NSTextFieldCell"; title = "SEB Service policy"; ObjectID = "100";</note>
       </trans-unit>
       <trans-unit id="292.ibShadowedToolTip" xml:space="preserve">
-        <source>Private clipboard should always be used besides when working with third party applications in a managed user account (if 'Enforce private clipboard on Mac' is enabled, this setting only affects SEB for Windows and older Mac versions)</source>
-        <target>Üblicherweise sollte die private Zwischenablage verwendet werden, ausser wenn mit zugelassenen Drittapplikationen in einem verwalteten Benutzerkonto gearbeitet werden soll (wenn 'Private Zwischenablage auf Mac erzwingen' aktiv ist, beeinflusst diese Einstellung nur SEB für Windows und ältere Mac-Versionen)</target>
-        <note>Class = "NSButton"; ibShadowedToolTip = "Private clipboard should always be used besides when working with third party applications in a managed user account (if 'Enforce private clipboard on Mac' is enabled, this setting only affects SEB for Windows and older Mac versions)"; ObjectID = "292";</note>
+        <source>Private clipboard should always be used besides when working with third party applications in a managed user account (if 'Enforce private clipboard (Mac)' is enabled, this setting only affects SEB for Windows and older Mac versions)</source>
+        <target>Üblicherweise sollte die private Zwischenablage verwendet werden, ausser wenn mit zugelassenen Drittapplikationen in einem verwalteten Benutzerkonto gearbeitet werden soll (wenn 'Private Zwischenablage erzwingen (Mac)' aktiv ist, beeinflusst diese Einstellung nur SEB für Windows und ältere Mac-Versionen)</target>
+        <note>Class = "NSButton"; ibShadowedToolTip = "Private clipboard should always be used besides when working with third party applications in a managed user account (if 'Enforce private clipboard (Mac)' is enabled, this setting only affects SEB for Windows and older Mac versions)"; ObjectID = "292";</note>
       </trans-unit>
       <trans-unit id="293.title" xml:space="preserve">
         <source>Use private clipboard</source>
@@ -4482,9 +4482,9 @@ Es wird gelöscht, wenn die Sitzung beendet wird</target>
         <note>Class = "NSButtonCell"; title = "Enable network connection selector"; ObjectID = "cYs-RO-IZD";</note>
       </trans-unit>
       <trans-unit id="cfE-bh-Syt.title" xml:space="preserve">
-        <source>Enforce private clipboard on Mac</source>
-        <target>Private Zwischenablage auf Mac erzwingen</target>
-        <note>Class = "NSButtonCell"; title = "Enforce private clipboard on Mac"; ObjectID = "cfE-bh-Syt";</note>
+        <source>Enforce private clipboard (Mac)</source>
+        <target>Private Zwischenablage erzwingen (Mac)</target>
+        <note>Class = "NSButtonCell"; title = "Enforce private clipboard (Mac)"; ObjectID = "cfE-bh-Syt";</note>
       </trans-unit>
       <trans-unit id="ci1-uS-Bra.ibShadowedToolTip" xml:space="preserve">
         <source>Automatic Assessment Configuration (AAC) Assessment Mode is available from macOS Monterey 12.1 (and Catalina 10.15.4 / 10.15.6+), from macOS Big Sur 11 with restrictions. It blocks various macOS features (which cannot be allowed optionally, like screen/window capture/sharing/mirroring, Siri, Dictation, Screen Proctoring)</source>
@@ -4532,9 +4532,9 @@ Es wird gelöscht, wenn die Sitzung beendet wird</target>
         <note>Class = "NSButton"; ibShadowedToolTip = "Transforms specific HTTP requests for clicked links to prevent the 'Guided Access is enabled' message being displayed when clicking all links"; ObjectID = "gaS-9v-32d";</note>
       </trans-unit>
       <trans-unit id="gma-Qm-KEF.title" xml:space="preserve">
-        <source>Use built-in display</source>
-        <target>Eingebautes Display benutzen</target>
-        <note>Class = "NSButtonCell"; title = "Use built-in display"; ObjectID = "gma-Qm-KEF";</note>
+        <source>Use built-in display (Mac)</source>
+        <target>Eingebautes Display benutzen (Mac)</target>
+        <note>Class = "NSButtonCell"; title = "Use built-in display (Mac)"; ObjectID = "gma-Qm-KEF";</note>
       </trans-unit>
       <trans-unit id="hpd-SM-vcA.title" xml:space="preserve">
         <source>maximum allowed number of connected displays (Mac/Win)</source>
@@ -4687,8 +4687,8 @@ Es wird gelöscht, wenn die Sitzung beendet wird</target>
         <note>Class = "NSTabViewItem"; label = "iOS"; ObjectID = "qR0-7R-jPL";</note>
       </trans-unit>
       <trans-unit id="qqs-ZA-6ds.ibShadowedToolTip" xml:space="preserve">
-        <source>If enabled, overrides the old setting 'Use private clipboard" and enforces the private clipboard, so contents can only be copy-pasted inside SEB browser windows</source>
-        <target>Wenn aktiviert, wird die alte Einstellung 'Private Zwischenablage verwenden' nicht beachtet, sodass Inhalte nur innerhalb von SEB-Browserfenstern kopiert und eingefügt werden können</target>
+        <source>Enforces the private clipboard in the classic kiosk mode, so contents can only be copy-pasted inside SEB browser windows</source>
+        <target>Private Zwischenablage wird im klassischen Kioskmodus erzwungen, sodass Inhalte nur innerhalb von SEB-Browserfenstern kopiert und eingefügt werden können</target>
         <note>Class = "NSButton"; ibShadowedToolTip = "If enabled, overrides the old setting 'Use private clipboard\" and enforces the private clipboard, so contents can only be copy-pasted inside SEB browser windows"; ObjectID = "qqs-ZA-6ds";</note>
       </trans-unit>
       <trans-unit id="rSD-zM-6qb.ibShadowedToolTip" xml:space="preserve">
