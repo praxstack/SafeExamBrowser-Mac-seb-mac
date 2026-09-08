@@ -565,7 +565,6 @@
 		69A727EB249D93CA0087B193 /* SEBScrollLock_locked@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 69A727E8249D93CA0087B193 /* SEBScrollLock_locked@2x.png */; };
 		69A727ED249D93CA0087B193 /* SEBScrollLock_locked@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 69A727E9249D93CA0087B193 /* SEBScrollLock_locked@3x.png */; };
 		69A727EF249D93CA0087B193 /* SEBScrollLockIcon_locked.png in Resources */ = {isa = PBXBuildFile; fileRef = 69A727EA249D93CA0087B193 /* SEBScrollLockIcon_locked.png */; };
-		69A9859C2D98BE1800B89451 /* InAppSettingsKit in Frameworks */ = {isa = PBXBuildFile; productRef = 69A9859B2D98BE1800B89451 /* InAppSettingsKit */; };
 		69AEC956218A228300848945 /* SEBFilteredURLCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 69AEC954218A228300848945 /* SEBFilteredURLCache.h */; };
 		69AEC95A218A228300848945 /* SEBFilteredURLCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 69AEC955218A228300848945 /* SEBFilteredURLCache.m */; };
 		69AF449F24699A5300F56542 /* JitsiViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69AF449E24699A5300F56542 /* JitsiViewController.swift */; };
@@ -908,6 +907,7 @@
 		69F9110116CA5C720041EA38 /* PrefsNetworkViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69F910FF16CA5C720041EA38 /* PrefsNetworkViewController.m */; };
 		69F9B53F2CC0601A004F6B60 /* TransmittingCachedScreenShotsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 69F9B53E2CC0601A004F6B60 /* TransmittingCachedScreenShotsView.xib */; };
 		69FC8F5028743C5C00ECD0A3 /* SEBNetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69FC8F4F28743C5C00ECD0A3 /* SEBNetworkManager.swift */; };
+		69FE091F3050673400F0C418 /* InAppSettingsKit in Frameworks */ = {isa = PBXBuildFile; productRef = 69FE091E3050673400F0C418 /* InAppSettingsKit */; };
 		69FF14AC1A1BB10300912933 /* SEBFilterArrayController.h in Headers */ = {isa = PBXBuildFile; fileRef = 69FF14AA1A1BB10300912933 /* SEBFilterArrayController.h */; };
 		69FF14AD1A1BB10300912933 /* SEBFilterArrayController.m in Sources */ = {isa = PBXBuildFile; fileRef = 69FF14AB1A1BB10300912933 /* SEBFilterArrayController.m */; };
 		FEED0000000000000000A002 /* SEBBrowserControllerTrustTestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEED0000000000000000A001 /* SEBBrowserControllerTrustTestSupport.swift */; };
@@ -1803,8 +1803,8 @@
 				6905CB402E1EB9CB00CE7B0F /* libSEBSupport.a in Frameworks */,
 				69A223421C20E45A00766354 /* libz.tbd in Frameworks */,
 				69BB07441BA11CD40065E1F2 /* WebKit.framework in Frameworks */,
+				69FE091F3050673400F0C418 /* InAppSettingsKit in Frameworks */,
 				69B8A72E2718A34D0006178D /* libcrypto.dylib in Frameworks */,
-				69A9859C2D98BE1800B89451 /* InAppSettingsKit in Frameworks */,
 				69B8A7252718A34D0006178D /* libssl.dylib in Frameworks */,
 				6943C6202A99246400EC18FF /* CocoaLumberjack in Frameworks */,
 				685E3A5E10165CEFE0705773 /* Pods_SEB.framework in Frameworks */,
@@ -3519,7 +3519,7 @@
 				6943C61F2A99246400EC18FF /* CocoaLumberjack */,
 				6943C6212A99246400EC18FF /* CocoaLumberjackSwift */,
 				6943C6232A99246400EC18FF /* CocoaLumberjackSwiftLogBackend */,
-				69A9859B2D98BE1800B89451 /* InAppSettingsKit */,
+				69FE091E3050673400F0C418 /* InAppSettingsKit */,
 			);
 			productName = SEB;
 			productReference = 6940B9661BA0F2FB008C8CFC /* SEB.app */;
@@ -3732,7 +3732,7 @@
 			mainGroup = 29B97314FDCFA39411CA2CEA /* SEB */;
 			packageReferences = (
 				6943C6122A991C4000EC18FF /* XCRemoteSwiftPackageReference "CocoaLumberjack" */,
-				69A9859A2D98BE1800B89451 /* XCRemoteSwiftPackageReference "InAppSettingsKit" */,
+				69FE091D3050673400F0C418 /* XCRemoteSwiftPackageReference "InAppSettingsKit" */,
 			);
 			productRefGroup = 19C28FACFE9D520D11CA2CBB /* Products */;
 			projectDirPath = "";
@@ -5108,7 +5108,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 15744;
+				CURRENT_PROJECT_VERSION = 15748;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 9Z623UDZ5L;
 				ENABLE_BITCODE = NO;
@@ -5209,7 +5209,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 15744;
+				CURRENT_PROJECT_VERSION = 15748;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 9Z623UDZ5L;
 				ENABLE_BITCODE = NO;
@@ -5504,7 +5504,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 15744;
+				CURRENT_PROJECT_VERSION = 15748;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 6F38DNSC7X;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -5551,7 +5551,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 15744;
+				CURRENT_PROJECT_VERSION = 15748;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6F38DNSC7X;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -5593,7 +5593,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 15744;
+				CURRENT_PROJECT_VERSION = 15748;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 6F38DNSC7X;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -5658,7 +5658,7 @@
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 15744;
+				CURRENT_PROJECT_VERSION = 15748;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6F38DNSC7X;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -5719,7 +5719,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 15744;
+				CURRENT_PROJECT_VERSION = 15748;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 62DXYN3744;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -5763,7 +5763,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 15744;
+				CURRENT_PROJECT_VERSION = 15748;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 62DXYN3744;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -5800,7 +5800,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 15744;
+				CURRENT_PROJECT_VERSION = 15748;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 62DXYN3744;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -5843,7 +5843,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 15744;
+				CURRENT_PROJECT_VERSION = 15748;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 62DXYN3744;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -5877,7 +5877,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 15744;
+				CURRENT_PROJECT_VERSION = 15748;
 				DEVELOPMENT_TEAM = 6F38DNSC7X;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -5943,7 +5943,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 15744;
+				CURRENT_PROJECT_VERSION = 15748;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6F38DNSC7X;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -6020,7 +6020,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Fondation de l'Ecole hôtelière de Lausanne, EHL";
-				CURRENT_PROJECT_VERSION = 15744;
+				CURRENT_PROJECT_VERSION = 15748;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -6075,7 +6075,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Fondation de l'Ecole hôtelière de Lausanne, EHL";
-				CURRENT_PROJECT_VERSION = 15744;
+				CURRENT_PROJECT_VERSION = 15748;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -6197,12 +6197,12 @@
 				minimumVersion = 3.0.0;
 			};
 		};
-		69A9859A2D98BE1800B89451 /* XCRemoteSwiftPackageReference "InAppSettingsKit" */ = {
+		69FE091D3050673400F0C418 /* XCRemoteSwiftPackageReference "InAppSettingsKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/futuretap/InAppSettingsKit.git";
+			repositoryURL = "https://github.com/SafeExamBrowser/InAppSettingsKit.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 3.8.5;
+				branch = "fix/radiogroup-invalid-sections";
+				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -6253,9 +6253,9 @@
 			package = 6943C6122A991C4000EC18FF /* XCRemoteSwiftPackageReference "CocoaLumberjack" */;
 			productName = CocoaLumberjackSwiftLogBackend;
 		};
-		69A9859B2D98BE1800B89451 /* InAppSettingsKit */ = {
+		69FE091E3050673400F0C418 /* InAppSettingsKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 69A9859A2D98BE1800B89451 /* XCRemoteSwiftPackageReference "InAppSettingsKit" */;
+			package = 69FE091D3050673400F0C418 /* XCRemoteSwiftPackageReference "InAppSettingsKit" */;
 			productName = InAppSettingsKit;
 		};
 /* End XCSwiftPackageProductDependency section */
