@@ -590,6 +590,12 @@ Shown while connecting to the server to fetch its certificate */
 /* Explanation at the top of the fetch-server-certificate sheet (Network / Certificates settings) */
 "Fetch a certificate presented by an HTTPS server and embed it into the settings. Verify the SHA-256 fingerprint out of band before embedding." = "Ein von einem HTTPS-Server präsentiertes Zertifikat abrufen und in die Einstellungen einbetten. Überprüfen Sie den SHA-256-Fingerabdruck über einen unabhängigen Kanal, bevor Sie es einbetten.";
 
+/* Placeholder in the server URL field of the fetch-server-certificate sheet */
+"Server URL or host (e.g. exam.example.org)" = "Server-URL oder Host (z. B. exam.example.org)";
+
+/* Button that fetches the certificate chain from the entered server */
+"Fetch" = "Abrufen";
+
 /* No comment provided by engineer. */
 "Fetching identities" = "Identitäten werden geladen …";
 

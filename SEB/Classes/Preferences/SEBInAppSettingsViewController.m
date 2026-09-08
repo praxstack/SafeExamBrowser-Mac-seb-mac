@@ -34,6 +34,7 @@
 #import "SEBInAppSettingsViewController.h"
 #import "CustomViewCell.h"
 #import "SEBUIUserDefaultsController.h"
+#import "SafeExamBrowser-Swift.h"
 
 
 @implementation SEBInAppSettingsViewController
@@ -427,6 +428,15 @@
         return self.embeddedCertificatesList;
     }
     return nil;
+}
+
+
+- (void)settingsViewController:(IASKAppSettingsViewController*)settingsViewController buttonTappedForSpecifier:(IASKSpecifier*)specifier
+{
+    // Add a TLS/SSL or CA certificate by entering a server URL (Settings/Network/Certificates)
+    if ([specifier.key isEqualToString:@"org_safeexambrowser_fetchServerCertificate"]) {
+        [self fetchServerCertificate];
+    }
 }
 
 
@@ -1157,6 +1167,69 @@
     [embeddedCertificates addObject:identityToEmbed];
     [preferences setSecureObject:embeddedCertificates.copy forKey:@"org_safeexambrowser_SEB_embeddedCertificates"];
     return YES;
+}
+
+
+// Present the "Add Certificate from URL" screen (fetch a server's TLS/SSL certificate
+// chain and embed the chosen certificate(s)). Config-time only; requires iOS 15+.
+- (void)fetchServerCertificate
+{
+    if (@available(iOS 15.0, *)) {
+        NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+        NSString *startURLString = [preferences secureStringForKey:@"org_safeexambrowser_SEB_startURL"];
+        __weak typeof(self) weakSelf = self;
+        UIViewController *fetchViewController =
+        [SEBiOSServerCertificateFetchPresenter makeViewControllerWithStartURLString:startURLString
+                                                                           onEmbed:^(NSArray<SEBEmbeddableCertificate *> * _Nonnull certificates) {
+            [weakSelf embedFetchedServerCertificates:certificates];
+        }
+                                                                          onCancel:^{
+            [weakSelf.appSettingsViewController dismissViewControllerAnimated:YES completion:nil];
+        }];
+        [self.appSettingsViewController presentViewController:fetchViewController animated:YES completion:nil];
+    } else {
+        [_sebViewController alertWithTitle:NSLocalizedString(@"Requires iOS 15 or Newer", @"")
+                                   message:NSLocalizedString(@"Adding a certificate by entering a server URL requires iOS 15 or newer. On earlier versions, embed TLS/SSL and CA certificates using a SEB desktop version.", @"")
+                              action1Title:NSLocalizedString(@"OK", @"")
+                            action1Handler:^{}
+                              action2Title:nil
+                            action2Handler:^{}];
+    }
+}
+
+
+// Append the certificate(s) chosen in the fetch screen to the embedded certificates and
+// refresh the list. TLS/SSL and CA certificates are stored base64-encoded under the
+// "certificateDataBase64" key (see SEBCertServices), matching the SEB desktop versions.
+- (void)embedFetchedServerCertificates:(NSArray<SEBEmbeddableCertificate *> *)certificates
+{
+    NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
+    NSMutableArray *embeddedCertificates = [preferences secureArrayForKey:@"org_safeexambrowser_SEB_embeddedCertificates"].mutableCopy;
+    if (!embeddedCertificates) {
+        embeddedCertificates = [NSMutableArray new];
+    }
+    for (SEBEmbeddableCertificate *certificate in certificates) {
+        NSDictionary *certificateToEmbed = @{
+            @"type" : [NSNumber numberWithInteger:certificate.type],
+            @"name" : certificate.name,
+            @"certificateDataBase64" : certificate.certificateDataBase64,
+        };
+        [embeddedCertificates addObject:certificateToEmbed];
+    }
+    [preferences setSecureObject:embeddedCertificates.copy forKey:@"org_safeexambrowser_SEB_embeddedCertificates"];
+
+    self->_embeddedCertificatesList = nil;
+    self->_embeddedCertificatesListCounter = nil;
+
+    // Hide the PSMultiValueSpecifier list and unhide it again, this is a
+    // workaround to refresh the list of embedded certificates
+    NSSet *currentlyHiddenKeys = self.appSettingsViewController.hiddenKeys;
+    NSMutableSet *newHiddenKeys = [NSMutableSet setWithSet:currentlyHiddenKeys];
+    [newHiddenKeys addObject: @"org_safeexambrowser_embeddedCertificatesList"];
+    [self.appSettingsViewController setHiddenKeys:newHiddenKeys];
+    [self.appSettingsViewController setHiddenKeys:currentlyHiddenKeys];
+
+    [self.appSettingsViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 

@@ -10,12 +10,15 @@
 //  back to the (ObjC) PrefsNetworkViewController, which adds them to the existing
 //  embedded-certificates settings.
 //
-//  Config-time only. macOS 12+ (SwiftUI); the caller gates on availability.
+//  Config-time only. macOS 12+ / iOS 15+ (SwiftUI); the caller gates on availability.
 //
 
+import SwiftUI
 #if os(macOS)
 import AppKit
-import SwiftUI
+#elseif os(iOS)
+import UIKit
+#endif
 
 /// A certificate the admin chose to embed, in the shape the settings model expects.
 /// `type` matches the certificateTypes enum in Constants.h (SSL = 0, CA = 2).
@@ -32,6 +35,7 @@ import SwiftUI
     }
 }
 
+#if os(macOS)
 /// Presents the fetch sheet from an existing AppKit window and returns the chosen
 /// certificates via the completion handler ([] when cancelled). @objc so the ObjC
 /// preferences controller can drive it.
@@ -74,8 +78,33 @@ import SwiftUI
         retainedSelf = nil
     }
 }
+#endif
 
-@available(macOS 12.0, *)
+#if os(iOS)
+/// Presents the fetch screen on iOS by vending a `UIHostingController` (wrapped in a
+/// navigation controller so the modal has a title bar). @objc so the ObjC in-app
+/// settings controller can drive it. Chosen certificates are returned via `onEmbed`;
+/// cancelling calls `onCancel`. The caller is responsible for dismissing the screen
+/// in both handlers.
+@available(iOS 15.0, *)
+@objc public class SEBiOSServerCertificateFetchPresenter: NSObject {
+
+    @objc public static func makeViewController(startURLString: String?,
+                                                onEmbed: @escaping ([SEBEmbeddableCertificate]) -> Void,
+                                                onCancel: @escaping () -> Void) -> UIViewController {
+        let rootView = ServerCertificateFetchView(startURLString: startURLString,
+                                                  onEmbed: onEmbed,
+                                                  onCancel: onCancel)
+        let hostingController = UIHostingController(rootView: rootView)
+        hostingController.title = NSLocalizedString("Embed Server Certificate", comment: "Title of the fetch-server-certificate sheet window")
+        let navigationController = UINavigationController(rootViewController: hostingController)
+        navigationController.modalPresentationStyle = .formSheet
+        return navigationController
+    }
+}
+#endif
+
+@available(macOS 12.0, iOS 15.0, *)
 private struct ServerCertificateFetchView: View {
 
     /// The exam's configured start URL (if any); powers the "Use Start URL" shortcut.
@@ -136,8 +165,10 @@ private struct ServerCertificateFetchView: View {
                             .foregroundColor(.accentColor)
                     }
                     .buttonStyle(.plain)
+#if os(macOS)
                     .help(String(localized: "Fill in the domain of the exam's start URL (\(suggestion))",
                                  comment: "Tooltip for the Use Start URL link; the argument is the host that will be inserted"))
+#endif
                 }
             }
 
@@ -176,7 +207,7 @@ private struct ServerCertificateFetchView: View {
 
             Spacer(minLength: 0)
 
-            HStack {
+            HStack(spacing: 20) {
                 Spacer()
                 Button("Cancel", action: onCancel).keyboardShortcut(.cancelAction)
                 Button("Embed", action: embed)
@@ -185,7 +216,9 @@ private struct ServerCertificateFetchView: View {
             }
         }
         .padding(20)
+#if os(macOS)
         .frame(width: 640, height: 480)
+#endif
     }
 
     @ViewBuilder
@@ -295,4 +328,3 @@ private struct ServerCertificateFetchView: View {
         return error.localizedDescription
     }
 }
-#endif
