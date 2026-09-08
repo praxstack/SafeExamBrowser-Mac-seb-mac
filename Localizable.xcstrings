@@ -508,6 +508,17 @@
         }
       }
     },
+    "%1$ld of %2$ld" : {
+      "comment" : "Search results counter shown in the search field, e.g. '1 of 15'",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$ld von %2$ld"
+          }
+        }
+      }
+    },
     "10.7 (this %@: 10.13)" : {
       "localizations" : {
         "de" : {
@@ -2239,6 +2250,18 @@
         }
       }
     },
+    "Fetch" : {
+      "comment" : "Button that fetches the certificate chain from the entered server",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrufen"
+          }
+        }
+      }
+    },
     "Fetch a certificate presented by an HTTPS server and embed it into the settings. Verify the SHA-256 fingerprint out of band before embedding." : {
       "comment" : "Explanation at the top of the fetch-server-certificate sheet (Network / Certificates settings)",
       "localizations" : {
@@ -3953,6 +3976,16 @@
         }
       }
     },
+    "Screen Proctoring Connection Failed" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Screen Proctoring-Verbindung fehlgeschlagen"
+          }
+        }
+      }
+    },
     "Screen Proctoring Inactive" : {
       "localizations" : {
         "de" : {
@@ -4214,6 +4247,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Verbindungsqualität %1$d von 10, warten auf Wiederaufnahme der Übertragung um %2$@"
+          }
+        }
+      }
+    },
+    "Server URL or host (e.g. exam.example.org)" : {
+      "comment" : "Placeholder in the server URL field of the fetch-server-certificate sheet",
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server-URL oder Host (z. B. exam.example.org)"
           }
         }
       }
@@ -5452,49 +5497,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ihr Bildschirm wird während dieser Prüfung gemäss den Vorgaben und Datenschutzrichtlinien Ihres Prüfungsanbieters aufgezeichnet. Für Fragen hierzu wenden Sie sich bitte an Ihren Prüfungsanbieter."
-          }
-        }
-      }
-    },
-    "%1$ld of %2$ld" : {
-      "comment" : "Search results counter shown in the search field, e.g. '1 of 15'",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$ld von %2$ld"
-          }
-        }
-      }
-    },
-    "Server URL or host (e.g. exam.example.org)" : {
-      "comment" : "Placeholder in the server URL field of the fetch-server-certificate sheet",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server-URL oder Host (z. B. exam.example.org)"
-          }
-        }
-      }
-    },
-    "Fetch" : {
-      "comment" : "Button that fetches the certificate chain from the entered server",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abrufen"
-          }
-        }
-      }
-    },
-    "Screen Proctoring Connection Failed" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Screen Proctoring-Verbindung fehlgeschlagen"
           }
         }
       }
