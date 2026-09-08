@@ -1065,6 +1065,9 @@ Shown while connecting to the server to fetch its certificate */
 "Screen Proctoring Active" = "Screen Proctoring Aktiv";
 
 /* No comment provided by engineer. */
+"Screen Proctoring Connection Failed" = "Screen Proctoring-Verbindung fehlgeschlagen";
+
+/* No comment provided by engineer. */
 "Screen Proctoring Inactive" = "Screen Proctoring Inaktiv";
 
 /* No comment provided by engineer. */

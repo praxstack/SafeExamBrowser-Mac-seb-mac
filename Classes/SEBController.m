@@ -2135,6 +2135,52 @@ static NSString * const kSEBWiFiKeychainService = @"org.safeexambrowser.SEB.wifi
 }
 
 
+// ScreenProctoringDelegate: the connection to the screen proctoring server failed.
+// For a fatal failure we don't let the session silently continue unmonitored:
+// alert the user and offer to retry connecting or quit the session.
+- (void) screenProctoringDidFailWithError:(NSError *)error fatal:(BOOL)fatal
+{
+    DDLogError(@"Screen proctoring connection did fail with error: %@ (fatal: %d)", error.userInfo[NSDebugDescriptionErrorKey] ?: error.localizedDescription, fatal);
+    if (!fatal) {
+        return;
+    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSString *localizedRecoverySuggestion = error.userInfo[NSLocalizedRecoverySuggestionErrorKey];
+        if (localizedRecoverySuggestion.length == 0) {
+            localizedRecoverySuggestion = NSLocalizedString(@"Contact your exam administrator", @"");
+        }
+        NSString *description = error.userInfo[NSLocalizedDescriptionKey];
+        if (description.length == 0) {
+            description = error.localizedDescription;
+        }
+        NSString *informativeText = [NSString stringWithFormat:@"%@\n%@", description, localizedRecoverySuggestion];
+        NSAlert *modalAlert = [self newAlert];
+        [modalAlert setMessageText:NSLocalizedString(@"Screen Proctoring Connection Failed", @"")];
+        [modalAlert setInformativeText:informativeText];
+        [modalAlert addButtonWithTitle:NSLocalizedString(@"Retry", @"")];
+        [modalAlert addButtonWithTitle:!self.quittingSession ? [NSString stringWithFormat:NSLocalizedString(@"Quit %@", @""), SEBFullAppNameClassic] : NSLocalizedString(@"Quit Session", @"")];
+        [modalAlert setAlertStyle:NSAlertStyleCritical];
+        void (^screenProctoringFailedHandler)(NSModalResponse) = ^void (NSModalResponse answer) {
+            [self removeAlertWindow:modalAlert.window];
+            switch (answer) {
+                case NSAlertFirstButtonReturn:
+                {
+                    DDLogInfo(@"Screen proctoring connection failed: user selected Retry");
+                    [self.screenProctoringController retryConnectingToScreenProctoringServer];
+                    break;
+                }
+                default:
+                {
+                    DDLogInfo(@"Screen proctoring connection failed: user selected Quit");
+                    [self sessionQuitRestart:NO];
+                    break;
+                }
+            }
+        };
+        [self runModalAlert:modalAlert conditionallyForWindow:self.browserController.mainBrowserWindow completionHandler:(void (^)(NSModalResponse answer))screenProctoringFailedHandler];
+    });
+}
+
 - (void) didFailWithError:(NSError *)error fatal:(BOOL)fatal
 {
     BOOL optionallyAttemptFallback = fatal && !_startingExamFromSEBServer && !_sebServerConnectionEstablished;

@@ -89,6 +89,13 @@ private struct SPSTransmittingState {
     @objc optional func collectedTriggerEvent(eventData: String)
     @objc optional func collectedKeyboardShortcutEvent(_ eventData: String)
     @objc optional func collectedAlphanumericKeyEvent()
+    /// Called when the connection to the screen proctoring server fails. When
+    /// `fatal` is true the controller could not establish or maintain the
+    /// connection (e.g. couldn't obtain an access token, or the token stayed
+    /// invalid after the configured number of attempts). The delegate is
+    /// expected to inform the user and offer to retry (see
+    /// `retryConnectingToScreenProctoringServer()`) or quit the session.
+    @objc optional func screenProctoringDidFail(error: NSError, fatal: Bool)
 #if os(macOS)
     /// Returns the view to capture for screen proctoring when system screen
     /// capture APIs are unavailable (e.g. in AAC mode). Typically the active
@@ -224,6 +231,11 @@ struct MetadataSettings {
     private var latestTriggerEventTimestamp: TimeInterval?
     private var alphanumericKeyCount = 0
     private var keyboardShortcuts = Array<String>()
+
+    // Whether screen proctoring has been started (timers running). Used to
+    // decide whether a retry should (re)start proctoring or just renew the
+    // connection while proctoring is already active.
+    private var screenProctoringActive = false
 
     // UI
     private var indicateHealthAndCaching = false
@@ -454,7 +466,25 @@ extension SEBScreenProctoringController {
             startMaxIntervalTimer()
             startMinIntervalTimer()
         metadataCollector.monitorEvents()
+        self.screenProctoringActive = true
         self.setScreenProctoringButtonState(ScreenProctoringButtonStateActive)
+    }
+
+    /// Retry establishing the connection to the screen proctoring server after
+    /// a failure was reported via `screenProctoringDidFail(error:fatal:)`. Reuses
+    /// the connection parameters received in the original JOIN instruction. If
+    /// proctoring was already active (e.g. the access token became invalid mid
+    /// session) only the token is renewed; otherwise proctoring is started.
+    @objc public func retryConnectingToScreenProctoringServer() {
+        DDLogInfo("SEB Screen Proctoring Controller: Retrying to connect to the screen proctoring server.")
+        cancelAllRequests = false
+        gettingAccessToken = false
+        gotAccessToken = false
+        getServerAccessToken {
+            if !self.screenProctoringActive {
+                self.startScreenProctoring()
+            }
+        }
     }
     
     private func captureScreenShot(triggerMetadata: String, timeStamp: TimeInterval?) {
@@ -967,6 +997,7 @@ extension SEBScreenProctoringController {
         repeatingTimerForHealthCheck = nil
         metadataCollector.stopMonitoringEvents()
         closingSession = false
+        screenProctoringActive = false
         transmittingDeferredScreenShotsWhileClosingErrorCount = 0
         screenShotCache.conditionallyRemoveCacheDirectory()
         _screenShotCache = nil
@@ -1016,7 +1047,7 @@ extension SEBScreenProctoringController {
     private func didFail(error: NSError, fatal: Bool) {
         self.setScreenProctoringButtonState(ScreenProctoringButtonStateInactiveError)
         if !cancelAllRequests {
-//            self.delegate?.didFail(error: error, fatal: fatal)
+            self.delegate?.screenProctoringDidFail?(error: error, fatal: fatal)
         }
     }
 
