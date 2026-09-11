@@ -224,6 +224,7 @@
 			<array>
 				<string>None</string>
 				<string>iOS 27</string>
+				<string>&gt; iOS 27</string>
 			</array>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
@@ -231,6 +232,7 @@
 			<array>
 				<integer>0</integer>
 				<integer>27</integer>
+				<string>28</string>
 			</array>
 			<key>DisplaySortedByTitle</key>
 			<false/>
